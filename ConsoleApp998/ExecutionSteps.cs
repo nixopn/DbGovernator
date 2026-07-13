@@ -108,7 +108,6 @@ namespace ConsoleApp998
             {
                 context.queryType = "unkown";
             }
-            // Поиск имени таблицы доделать
             var patterns = new[]
             {
                 @"(?i)(from|into|update|delete\s+from)\s+(\w+)"
@@ -157,31 +156,65 @@ namespace ConsoleApp998
     {
         private int _maxRetries;
         private int _retryDelayMs;
+
+        public void SetTries( int maxRetries)
+        {
+            _maxRetries = maxRetries;
+        }
+        public void SetRetryDelay( int retryDelayMs)
+        {
+            _retryDelayMs = retryDelayMs;
+        }
         public void VisitAfterExecution(ExecutionContext context)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void VisitBeforeExecution(ExecutionContext context)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void VisitExecution(ExecutionContext context)
         {
-            throw new NotImplementedException();
+            int i = 1;
+            do
+            {
+                try
+                {
+                    var result = context.executionFunction.DynamicInvoke();
+                    context.Result = result.GetType().GetProperty("Result").GetValue(result);
+                    if(context.Result is int)
+                    {
+                        context.affectedRows = (int)context.Result;
+                    }
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                    Thread.Sleep(_retryDelayMs);
+                    Console.WriteLine($"Retrying {i} time");
+                    if(i == _maxRetries)
+                    {
+                        throw (new Exception("Service is temporary unavailable"));
+                    }
+                }
+                i++;
+            } while (i <= _maxRetries);
+            return;
         }
 
         public delegate int Operation();
 
         public void VisitPreparing(ExecutionContext context)
         {
-            throw new NotImplementedException();
+            
         }
 
         public void VisitResultProcessing(ExecutionContext context)
         {
-            throw new NotImplementedException();
+            
         }
     }
 
@@ -193,9 +226,14 @@ namespace ConsoleApp998
         public DateTime After { get; set; }
         public TimeSpan Duration => After - Before;
 
-        public object? affectedRows { get; set; } 
+        public object? Result {get; set; }
+        public int affectedRows {get; set; }
 
         public string? tableName { get; set; }
-        public string? queryType { get; set; }
+        public string? queryType {get; set; }
+
+        public Delegate executionFunction {get; set;}
     }
 }
+
+
