@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 
 
 
+
 namespace ConsoleApp998
 {
 
@@ -108,21 +109,16 @@ namespace ConsoleApp998
                 context.queryType = "unkown";
             }
             // Поиск имени таблицы доделать
+            var patterns = new[]
+            {
+                @"(?i)(from|into|update|delete\s+from)\s+(\w+)"
+            };
+            var match =Regex.Match(commandText, patterns[0]);
+            context.tableName = match.Groups[2].Value;
 
 
-
-
-
-
-
-
-
-
-
-
-
-            Console.WriteLine(context.queryType);
-            Console.WriteLine(context.tableName);
+            Console.WriteLine($"Query type {context.queryType}");
+            Console.WriteLine($"Table name {context.tableName}");
         }
     }
 
@@ -192,10 +188,13 @@ namespace ConsoleApp998
     public class ExecutionContext
     {
         public DbCommand Command { get; set; }
+
         public DateTime Before { get; set; }
         public DateTime After { get; set; }
         public TimeSpan Duration => After - Before;
-        public int affectedRows { get; set; }
+
+        public object? affectedRows { get; set; } 
+
         public string? tableName { get; set; }
         public string? queryType { get; set; }
     }

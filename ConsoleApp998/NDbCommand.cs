@@ -51,6 +51,32 @@ namespace ConsoleApp998
 
 
 
+        public NDbCommand(DbCommand innerCommand, DbConnection connection, DbTransaction transaction)
+        {
+            _executionSteps = new List<ExecutionStep>
+            {
+                new PrepareCommand(),
+                new BeforeExecute(),
+                new ExecutionSt(),
+                new AfterExecution(),
+                new ResultProcessing()
+            };
+            _visitors = new List<IVisitor>();
+            Audit audit = new Audit();
+            AddVisitor(audit);
+            Metrics metrics = new Metrics();
+            AddVisitor(metrics);
+            var executionContext = new ExecutionContext();
+            executionContext.Command = innerCommand;
+            _executionSteps[0].AcceptVisitor(_visitors[0], executionContext);
+            _innerCommand = innerCommand;
+            _innerCommand.Connection = connection;
+            _innerCommand.Transaction = transaction;
+            Connection = connection;
+            Transaction = transaction;
+        }
+
+
         public void AddVisitor(IVisitor visitor)
         {
             _visitors.Add(visitor);
@@ -77,6 +103,11 @@ namespace ConsoleApp998
             int ret = _innerCommand.ExecuteNonQuery();
             return ret;
         }
+
+
+
+
+
 
 
         public async Task<int> ExecuteNonQueryAsync()

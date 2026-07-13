@@ -17,12 +17,15 @@ namespace ConsoleApp998
             try
             {
                 var dataSource = NpgsqlDataSource.Create(connectionString);
-                await using var con = await dataSource.OpenConnectionAsync();
+                var NDataSource = new NDbDataSource(dataSource);
+                await using var con = await NDataSource.OpenConnectionAsync();
                 await using var transaction = await con.BeginTransactionAsync();
-                await using var cmd1 = new NpgsqlCommand(command1, con, transaction);
-                await cmd1.ExecuteNonQueryAsync();
-                await using var cmd2 = new NpgsqlCommand(command2, con, transaction);
-                await cmd2.ExecuteNonQueryAsync();
+                await using var cmd1 = new NpgsqlCommand(command1);
+                await using var cmd11 = new NDbCommand(cmd1, con, transaction);
+                await cmd11.ExecuteNonQueryAsync();
+                await using var cmd2 = new NpgsqlCommand(command2);
+                await using var cmd22 = new NDbCommand(cmd2, con, transaction);
+                await cmd22.ExecuteNonQueryAsync();
                 await transaction.CommitAsync();
             }
             catch (Exception ex)
@@ -35,17 +38,20 @@ namespace ConsoleApp998
         public async Task TestConflict()
         {
             var dataSource = NpgsqlDataSource.Create(connectionString);
+            var NDataSource = new NDbDataSource(dataSource);
             Task transaction1 = Task.Run(async () =>
             {
-                await using var con = await dataSource.OpenConnectionAsync();
+                await using var con = await NDataSource.OpenConnectionAsync();
                 await using var transaction = await con.BeginTransactionAsync();
                 try
                 {
-                    await using var cmd1 = new NpgsqlCommand(command1, con, transaction);
-                    await cmd1.ExecuteNonQueryAsync();
+                    await using var cmd1 = new NpgsqlCommand(command1);
+                    await using var cmd11 = new NDbCommand(cmd1, con, transaction);
+                    await cmd11.ExecuteNonQueryAsync();
                     await Task.Delay(1000);
-                    await using var cmd2 = new NpgsqlCommand(command2, con, transaction);
-                    await cmd2.ExecuteNonQueryAsync();
+                    await using var cmd2 = new NpgsqlCommand(command2);
+                    await using var cmd22 = new NDbCommand(cmd2, con, transaction);
+                    await cmd22.ExecuteNonQueryAsync();
                     await transaction.CommitAsync();
                 }
                 catch (Exception ex)
@@ -58,15 +64,17 @@ namespace ConsoleApp998
             });
             Task transaction2 = Task.Run(async () =>
             {
-                await using var con = await dataSource.OpenConnectionAsync();
+                await using var con = await NDataSource.OpenConnectionAsync();
                 await using var transaction = await con.BeginTransactionAsync();
                 try
                 {
-                    await using var cmd1 = new NpgsqlCommand(command2, con, transaction);
-                    await cmd1.ExecuteNonQueryAsync();
+                    await using var cmd1 = new NpgsqlCommand(command2);
+                    await using var cmd11 = new NDbCommand(cmd1, con, transaction);
+                    await cmd11.ExecuteNonQueryAsync();
                     await Task.Delay(1000);
-                    await using var cmd2 = new NpgsqlCommand(command1, con, transaction);
-                    await cmd2.ExecuteNonQueryAsync();
+                    await using var cmd2 = new NpgsqlCommand(command1);
+                    await using var cmd22 = new NDbCommand(cmd2, con, transaction);
+                    await cmd22.ExecuteNonQueryAsync();
                     await transaction.CommitAsync();
                 }
                 catch (Exception ex)
