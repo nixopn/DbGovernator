@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp998
+namespace DbGovernator
 {
+    // Реализует IDbTransaction
     internal class NDbTransaction : IDbTransaction
     {
         private DbTransaction _innerTransaction;

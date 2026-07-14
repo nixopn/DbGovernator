@@ -6,8 +6,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp998
+namespace DbGovernator
 {
+    // Реализует интерфейс IDbConnection
     internal class NDbConnection : IDbConnection
     {
         private DbConnection _innerConnection;

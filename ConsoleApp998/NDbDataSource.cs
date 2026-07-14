@@ -5,8 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp998
+namespace DbGovernator
 {
+    // Реализует DbDataSource
     internal class NDbDataSource : DbDataSource
     {
         private DbDataSource _innerDataSource;
@@ -26,9 +27,6 @@ namespace ConsoleApp998
             var retCmd = new NDbCommand(cmd);
             return retCmd;
         }
-
-
-
 
         public async Task<DbConnection> OpenConnectionAsync()
         {

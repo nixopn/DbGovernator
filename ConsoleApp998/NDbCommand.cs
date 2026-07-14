@@ -7,26 +7,31 @@ using System.Reflection.Metadata.Ecma335;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp998
+namespace DbGovernator
 {
+    // Реализует интерфейс IDbCommand, является обёрткой для DbCommand
     internal class NDbCommand : IDbCommand
     {
         private DbCommand _innerCommand;
 
 
+        // Списки шагов выполнения и посетителей, задаются в конструкторе (пока что)
         private List<ExecutionStep> _executionSteps;
         private List<IVisitor> _visitors;
 
 
+        // Текст команды
         public string CommandText { get => _innerCommand.CommandText; set => _innerCommand.CommandText = value; }
         public int CommandTimeout { get => _innerCommand.CommandTimeout; set => _innerCommand.CommandTimeout = value; }
         public CommandType CommandType { get => _innerCommand.CommandType; set => _innerCommand.CommandType = value; }
+        // Соединение команды
         public IDbConnection? Connection { get => _innerCommand.Connection; set => _innerCommand.Connection = (System.Data.Common.DbConnection)value; }
-
+        // Параметры команды
         public IDataParameterCollection Parameters => _innerCommand.Parameters;
-
+        // Транзакция, частью которой является команда (команда может быть и без транзакции)
         public IDbTransaction? Transaction { get => _innerCommand.Transaction; set => _innerCommand.Transaction = (System.Data.Common.DbTransaction)value; }
         public UpdateRowSource UpdatedRowSource { get => _innerCommand.UpdatedRowSource; set => _innerCommand.UpdatedRowSource = value; }
+        // Конструктор на основе другой команды
         public NDbCommand(DbCommand innerCommand)
         {
             _executionSteps = new List<ExecutionStep>
@@ -48,13 +53,12 @@ namespace ConsoleApp998
             AddVisitor(executionStrategy);
             var executionContext = new ExecutionContext();
             executionContext.Command = innerCommand;
-            _executionSteps[0].AcceptVisitor(_visitors[0], executionContext);
             _innerCommand = innerCommand;
         }
 
 
 
-
+        // Конструктор для команды в транзакции
         public NDbCommand(DbCommand innerCommand, DbConnection connection, DbTransaction transaction)
         {
             _executionSteps = new List<ExecutionStep>
@@ -76,7 +80,7 @@ namespace ConsoleApp998
             AddVisitor(executionStrategy);
             var executionContext = new ExecutionContext();
             executionContext.Command = innerCommand;
-            _executionSteps[0].AcceptVisitor(_visitors[0], executionContext);
+            //_executionSteps[0].AcceptVisitor(_visitors[0], executionContext);
             _innerCommand = innerCommand;
             _innerCommand.Connection = connection;
             _innerCommand.Transaction = transaction;
@@ -85,11 +89,17 @@ namespace ConsoleApp998
         }
 
 
+
+        // Добавляет посетителя
         public void AddVisitor(IVisitor visitor)
         {
             _visitors.Add(visitor);
         }
-
+        // Удаляет посетителя
+        public void DeleteVisitor(IVisitor visitor)
+        {
+            _visitors.Remove(visitor);
+        }
         public void Cancel()
         {
             _innerCommand.Cancel();
@@ -113,7 +123,7 @@ namespace ConsoleApp998
         }
 
 
-
+        // Выполнение шагов для асинхронных методов
         private async Task<T> ExecuteStepsAsync<T>(Func<Task<T>> executeFunc, ExecutionContext executionContext)
         {
             executionContext.executionFunction = executeFunc;
@@ -131,7 +141,7 @@ namespace ConsoleApp998
 
 
 
-
+        // Для выполнения запросов по типу insert, update, delete
         public async Task<int> ExecuteNonQueryAsync()
         {
             //var executionContext = new ExecutionContext();
@@ -151,6 +161,7 @@ namespace ConsoleApp998
         }
 
 
+        // Для выполнения запросов по типу select
         public IDataReader ExecuteReader()
         {
             return _innerCommand.ExecuteReader();
@@ -189,6 +200,8 @@ namespace ConsoleApp998
             await _innerCommand.DisposeAsync();
         }
 
+
+        // Для выполнения запросов, возвращающих одно конкретное значение
         public object? ExecuteScalar()
         {
             return _innerCommand.ExecuteScalar();

@@ -5,8 +5,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp998
+namespace DbGovernator
 {
+    // Класс для тестирования DbGovernator
+    // Проверяет insert-запросы
     internal class TestInsert
     {
         public string connectionString {  get; set; }

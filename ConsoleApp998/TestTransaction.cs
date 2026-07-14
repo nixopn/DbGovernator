@@ -5,13 +5,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ConsoleApp998
+namespace DbGovernator
 {
+    // Класс для тестирования DbGovernator
+    // Проверяет работу транзакций
     internal class TestTransaction
     {
         public string connectionString { get; set; }
         public string command1 { get; set; }
         public string command2 { get; set; }
+
+
+        // Проверка базовой транзакции
         public async Task TestBasic()
         {
             try
@@ -35,6 +40,9 @@ namespace ConsoleApp998
             }
             Console.WriteLine("Test passed");
         }
+
+
+        // Проверка ситуации конфликта транзакций
         public async Task TestConflict()
         {
             var dataSource = NpgsqlDataSource.Create(connectionString);
