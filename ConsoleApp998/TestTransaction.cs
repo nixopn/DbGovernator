@@ -88,7 +88,7 @@ namespace DbGovernator
                 catch (Exception ex)
                 {
 
-                    Console.WriteLine($"Transaction 2 {ex.Message}");
+                    Console.WriteLine($"Transaction 2 {ex.Message} \n");
                     await transaction.RollbackAsync();
                     throw;
                 }

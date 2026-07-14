@@ -9,6 +9,10 @@ namespace DbGovernator
 {
     class Audit : IVisitor
     {
+        public bool hadException { get; set; }
+        public ILogger Logger { get; set; }
+
+
         // Собирает информацию о типе запроса и названии таблицы, на которую он действует
         public void VisitResultProcessing(ExecutionContext context) { }
 
@@ -49,8 +53,8 @@ namespace DbGovernator
             context.tableName = match.Groups[2].Value;
 
 
-            Console.WriteLine($"Query type {context.queryType}");
-            Console.WriteLine($"Table name {context.tableName}");
+            Logger.Log($"Query type: {context.queryType}");
+            Logger.Log($"Table name: {context.tableName}");
         }
     }
 }

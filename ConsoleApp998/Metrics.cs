@@ -12,10 +12,13 @@ namespace DbGovernator
     // Сырой sql-запрос
     class Metrics : IVisitor
     {
+        public bool hadException { get; set; }
+        public ILogger Logger { get; set; }
+
         public void VisitResultProcessing(ExecutionContext context)
         {
-            Console.WriteLine($"Duration: {context.Duration.TotalMilliseconds}");
-            Console.WriteLine($"Rows Affected: {context.affectedRows}");
+            Logger.Log($"Duration: {context.Duration.TotalMilliseconds}");
+            Logger.Log($"Rows Affected: {context.affectedRows}");
         }
 
         public void VisitAfterExecution(ExecutionContext context)
@@ -32,7 +35,7 @@ namespace DbGovernator
 
         public void VisitPreparing(ExecutionContext context)
         {
-            Console.WriteLine($"SQL: {context.Command.CommandText}");
+            Logger.Log($"SQL: {context.Command.CommandText}");
         }
     }
 }

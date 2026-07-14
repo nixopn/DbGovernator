@@ -10,6 +10,9 @@ namespace DbGovernator
     // Имеет методы на все шаги выполнения команд
     interface IVisitor
     {
+        public bool hadException { get; set; }
+        public ILogger Logger { get; set; }
+
         public void VisitPreparing(ExecutionContext context);
         public void VisitBeforeExecution(ExecutionContext context);
         public void VisitExecution(ExecutionContext context);

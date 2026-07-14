@@ -51,6 +51,10 @@ namespace DbGovernator
             executionStrategy.SetTries(9);
             executionStrategy.SetRetryDelay(298);
             AddVisitor(executionStrategy);
+            foreach(var visitor in _visitors)
+            {
+                visitor.Logger = new ConsoleLogger();
+            }
             var executionContext = new ExecutionContext();
             executionContext.Command = innerCommand;
             _innerCommand = innerCommand;
@@ -78,6 +82,10 @@ namespace DbGovernator
             executionStrategy.SetTries(9);
             executionStrategy.SetRetryDelay(298);
             AddVisitor(executionStrategy);
+            foreach (var visitor in _visitors)
+            {
+                visitor.Logger = new ConsoleLogger();
+            }
             var executionContext = new ExecutionContext();
             executionContext.Command = innerCommand;
             //_executionSteps[0].AcceptVisitor(_visitors[0], executionContext);
@@ -118,8 +126,14 @@ namespace DbGovernator
 
         public int ExecuteNonQuery()
         {
-            int ret = _innerCommand.ExecuteNonQuery();
-            return ret;
+            var executionContext = new ExecutionContext();
+            executionContext.Command = _innerCommand;
+
+            var result = ExecuteSteps<int>(() => _innerCommand.ExecuteNonQuery(), executionContext);
+            executionContext.Result = result;
+            return result;
+            //int ret = _innerCommand.ExecuteNonQuery();
+            //return ret;
         }
 
 
@@ -131,8 +145,56 @@ namespace DbGovernator
             {
                 foreach(var visitor in _visitors)
                 {
-                    step.AcceptVisitor(visitor, executionContext);
+                    if (visitor.hadException)
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        step.AcceptVisitor(visitor, executionContext);
+                    }
+                    catch (Exception ex)
+                    {
+                        visitor.hadException = true;
+                        Console.WriteLine(ex.Message);
+                    }
+                    //step.AcceptVisitor(visitor, executionContext);
                 }
+            }
+            if(executionContext.Result == null)
+            {
+                throw (new Exception("Command execution failed, result is null"));
+            }
+            return (T)executionContext.Result;
+        }
+
+
+        private T ExecuteSteps<T>(Func<object?> executeFunc, ExecutionContext executionContext)
+        {
+            executionContext.executionFunction = executeFunc;
+            foreach (var step in _executionSteps)
+            {
+                foreach (var visitor in _visitors)
+                {
+                    if (visitor.hadException)
+                    {
+                        continue;
+                    }
+                    try
+                    {
+                        step.AcceptVisitor(visitor, executionContext);
+                    }
+                    catch (Exception ex)
+                    {
+                        visitor.hadException = true;
+                        Console.WriteLine(ex.Message);
+                    }
+                    //step.AcceptVisitor(visitor, executionContext);
+                }
+            }
+            if (executionContext.Result == null)
+            {
+                throw (new Exception("Command execution failed, result is null"));
             }
             return (T)executionContext.Result;
         }
@@ -164,7 +226,13 @@ namespace DbGovernator
         // Для выполнения запросов по типу select
         public IDataReader ExecuteReader()
         {
-            return _innerCommand.ExecuteReader();
+            var executionContext = new ExecutionContext();
+            executionContext.Command = _innerCommand;
+
+            var result = ExecuteSteps<IDataReader>(() => _innerCommand.ExecuteReader(), executionContext);
+            executionContext.Result = result;
+            return result;
+            // return _innerCommand.ExecuteReader();
         }
 
         public async Task<DbDataReader> ExecuteReaderAsync()
@@ -181,7 +249,13 @@ namespace DbGovernator
 
         public IDataReader ExecuteReader(CommandBehavior behavior)
         {
-            return _innerCommand.ExecuteReader(behavior);
+            var executionContext = new ExecutionContext();
+            executionContext.Command = _innerCommand;
+
+            var result = ExecuteSteps<IDataReader>(() => _innerCommand.ExecuteReader(behavior), executionContext);
+            executionContext.Result = result;
+            return result;
+            //return _innerCommand.ExecuteReader(behavior);
         }
 
         public async Task<DbDataReader> ExecuteReaderAsync(CommandBehavior behavior)
@@ -204,7 +278,13 @@ namespace DbGovernator
         // Для выполнения запросов, возвращающих одно конкретное значение
         public object? ExecuteScalar()
         {
-            return _innerCommand.ExecuteScalar();
+            var executionContext = new ExecutionContext();
+            executionContext.Command = _innerCommand;
+
+            var result = ExecuteSteps<object?>(() => _innerCommand.ExecuteScalar(), executionContext);
+            executionContext.Result = result;
+            return result;
+            //return _innerCommand.ExecuteScalar();
         }
 
         public async Task<object?> ExecuteScalarAsync()

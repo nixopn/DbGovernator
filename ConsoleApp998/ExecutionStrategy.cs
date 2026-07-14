@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
+using System.Net.Http.Headers;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,6 +12,9 @@ namespace DbGovernator
     // Контролирует процесс выполнения запроса
     class ExecutionStrategy : IVisitor
     {
+        public bool hadException { get; set; }
+        public ILogger Logger { get; set; }
+
         private int _maxRetries; // Максимальное количество попыток повтора в случае провала запроса
         private int _retryDelayMs; // Задержка между попытками
 
@@ -41,6 +47,17 @@ namespace DbGovernator
                 try
                 {
                     var result = context.executionFunction();
+                    if(result is int)
+                    {
+                        context.Result = result;
+                        context.affectedRows = (int)result;
+                        return;
+                    }
+                    if(result is not Task)
+                    {
+                        context.Result = result;
+                        return;
+                    }
                     context.Result = result.GetType().GetProperty("Result").GetValue(result);
                     // Если результат int в случае ExecuteNonQuery, ExecuteScalar, то записывает в affectedRows
                     if (context.Result is int)
@@ -51,12 +68,16 @@ namespace DbGovernator
                 }
                 catch (Exception ex)
                 {
-                    Console.WriteLine(ex.Message);
+                    if (!HasDbException(ex))
+                    {
+                        throw (new Exception("Not an sql exception", ex));
+                    }
+                    // Console.WriteLine(ex.Message);
                     Thread.Sleep(_retryDelayMs);
-                    Console.WriteLine($"Retrying {i} time");
+                    Logger.Log($"Retrying {i} time");
                     if (i == _maxRetries)
                     {
-                        throw (new Exception("Service is temporary unavailable"));
+                        throw (new Exception("Service is temporary unavailable", ex));
                     }
                 }
                 i++;
@@ -73,6 +94,20 @@ namespace DbGovernator
         public void VisitResultProcessing(ExecutionContext context)
         {
 
+        }
+
+
+        private bool HasDbException(Exception ex)
+        {
+            if(ex == null)
+            {
+                return false;
+            }
+            if(ex is DbException)
+            {
+                return true;
+            }
+            return HasDbException(ex.InnerException);
         }
     }
 }

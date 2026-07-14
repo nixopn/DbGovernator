@@ -237,9 +237,9 @@
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Users\\Владимир\\source\\repos\\ConsoleApp998\\ConsoleApp998\\ConsoleApp998.csproj",
-      "projectName": "ConsoleApp998",
-      "projectPath": "C:\\Users\\Владимир\\source\\repos\\ConsoleApp998\\ConsoleApp998\\ConsoleApp998.csproj",
+      "projectUniqueName": "C:\\Users\\Владимир\\source\\repos\\ConsoleApp998\\ConsoleApp998\\DbGovernator.csproj",
+      "projectName": "DbGovernator",
+      "projectPath": "C:\\Users\\Владимир\\source\\repos\\ConsoleApp998\\ConsoleApp998\\DbGovernator.csproj",
       "packagesPath": "C:\\Users\\Владимир\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\Владимир\\source\\repos\\ConsoleApp998\\ConsoleApp998\\obj\\",
       "projectStyle": "PackageReference",
@@ -305,5 +305,13 @@
         "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.301/PortableRuntimeIdentifierGraph.json"
       }
     }
-  }
+  },
+  "logs": [
+    {
+      "code": "NU1900",
+      "level": "Warning",
+      "warningLevel": 1,
+      "message": "Произошла ошибка при получении данных уязвимости пакета: Не удалось загрузить индекс службы для источника https://api.nuget.org/v3/index.json."
+    }
+  ]
 }

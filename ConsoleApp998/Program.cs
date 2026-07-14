@@ -37,6 +37,21 @@ namespace app
             }
 
 
+            using (var cmd = NdataSource.CreateCommand("INSERT INTO users(name) VALUES ('aaaaaaaa');"))
+            {
+                cmd.ExecuteNonQuery();
+            }
+
+
+            using (var cmd = NdataSource.CreateCommand("SELECT * from users where id=229"))
+            using (var reader = cmd.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    Console.WriteLine($"{reader.GetInt32(0)} {reader.GetString(1)}");
+
+                }
+            }
             // "UPDATE users SET name='eeeeeeee' where id=98"
             // "INSERT INTO users(name) VALUES ('aaaaaaaa');"
         }
