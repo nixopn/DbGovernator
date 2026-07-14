@@ -40,7 +40,7 @@ namespace DbGovernator
             {
                 try
                 {
-                    var result = context.executionFunction.DynamicInvoke();
+                    var result = context.executionFunction();
                     context.Result = result.GetType().GetProperty("Result").GetValue(result);
                     // Если результат int в случае ExecuteNonQuery, ExecuteScalar, то записывает в affectedRows
                     if (context.Result is int)

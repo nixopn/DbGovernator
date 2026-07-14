@@ -28,6 +28,6 @@ namespace DbGovernator
         public string? queryType { get; set; }
 
         // Делегат для передачи функции исполняющей запрос
-        public Delegate executionFunction { get; set; }
+        public Func<object?> executionFunction { get; set; }
     }
 }
