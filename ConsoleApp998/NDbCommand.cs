@@ -217,7 +217,7 @@ namespace DbGovernator
             var executionContext = new ExecutionContext();
             executionContext.Command = _innerCommand;
 
-            var result = await ExecuteStepsAsync<int>(async () => await _innerCommand.ExecuteNonQueryAsync(), executionContext);
+            var result = await ExecuteStepsAsync<int>(() =>  _innerCommand.ExecuteNonQueryAsync(), executionContext);
             executionContext.Result = result;
             return result;
         }
@@ -240,7 +240,7 @@ namespace DbGovernator
             var executionContext = new ExecutionContext();
             executionContext.Command = _innerCommand;
 
-            var result = await ExecuteStepsAsync<DbDataReader>(async () => await _innerCommand.ExecuteReaderAsync(), executionContext);
+            var result = await ExecuteStepsAsync<DbDataReader>(() => _innerCommand.ExecuteReaderAsync(), executionContext);
             executionContext.Result = result;
             return result;
             //var ret = _innerCommand.ExecuteReaderAsync();
@@ -263,7 +263,7 @@ namespace DbGovernator
             var executionContext = new ExecutionContext();
             executionContext.Command = _innerCommand;
 
-            var result = await ExecuteStepsAsync<DbDataReader>(async () => await _innerCommand.ExecuteReaderAsync(behavior), executionContext);
+            var result = await ExecuteStepsAsync<DbDataReader>(() => _innerCommand.ExecuteReaderAsync(behavior), executionContext);
             executionContext.Result = result;
             return result;
             //var ret = _innerCommand.ExecuteReaderAsync(behavior);
@@ -291,7 +291,7 @@ namespace DbGovernator
         {
             var executionContext = new ExecutionContext();
             executionContext.Command = _innerCommand;
-            var result = await ExecuteStepsAsync<object?>(async () => await _innerCommand.ExecuteScalarAsync(), executionContext);
+            var result = await ExecuteStepsAsync<object?>(() => _innerCommand.ExecuteScalarAsync(), executionContext);
             executionContext.Result = result;
             return result;
             //var ret = _innerCommand.ExecuteScalarAsync();
