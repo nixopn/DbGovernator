@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbGovernator.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -7,17 +8,28 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DbGovernator
+namespace DbGovernator.Realisations
 {
     // Контролирует процесс выполнения запроса
-    class ExecutionStrategy : IVisitor
+    public class ExecutionStrategy : IVisitor
     {
         public bool hadException { get; set; }
         public ILogger Logger { get; set; }
 
-        private int _maxRetries; // Максимальное количество попыток повтора в случае провала запроса
-        private int _retryDelayMs; // Задержка между попытками
+        private int _maxRetries = 9; // Максимальное количество попыток повтора в случае провала запроса
+        private int _retryDelayMs = 298; // Задержка между попытками
 
+
+        public ExecutionStrategy()
+        {
+            hadException = false;
+        }
+
+
+        public void Reset()
+        {
+            hadException = false;
+        }
         // Ставит количество попыток
         public void SetTries(int maxRetries)
         {
@@ -70,14 +82,14 @@ namespace DbGovernator
                 {
                     if (!HasDbException(ex))
                     {
-                        throw (new Exception("Not an sql exception", ex));
+                        throw new Exception("Not an sql exception", ex);
                     }
                     // Console.WriteLine(ex.Message);
                     Thread.Sleep(_retryDelayMs);
                     Logger.Log($"Retrying {i} time");
                     if (i == _maxRetries)
                     {
-                        throw (new Exception("Service is temporary unavailable", ex));
+                        throw new Exception("Service is temporary unavailable", ex);
                     }
                 }
                 i++;

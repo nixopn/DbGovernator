@@ -1,13 +1,14 @@
-﻿using System;
+﻿using DbGovernator.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
-namespace DbGovernator
+namespace DbGovernator.Realisations
 {
-    class Audit : IVisitor
+    public class Audit : IVisitor
     {
         public bool hadException { get; set; }
         public ILogger Logger { get; set; }

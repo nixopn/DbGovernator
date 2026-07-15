@@ -1,16 +1,17 @@
-﻿using System;
+﻿using DbGovernator.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DbGovernator
+namespace DbGovernator.Realisations
 {
     // Собирает следующие метрики:
     // Время запроса
     // Количество затронутых столбцов
     // Сырой sql-запрос
-    class Metrics : IVisitor
+    public class Metrics : IVisitor
     {
         public bool hadException { get; set; }
         public ILogger Logger { get; set; }

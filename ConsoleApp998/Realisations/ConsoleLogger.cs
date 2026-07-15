@@ -1,13 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DbGovernator.Abstractions;
 
-namespace DbGovernator
+namespace DbGovernator.Realisations
 {
     // Реализация интерфейса ILogger для печати в консоль
-    internal class ConsoleLogger : ILogger
+    public class ConsoleLogger : ILogger
     {
         public string Message { get; set; }
 

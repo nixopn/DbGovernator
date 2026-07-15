@@ -1,4 +1,8 @@
-﻿using Npgsql;
+﻿using DbGovernator;
+using DbGovernator.Abstractions;
+using DbGovernator.NDbClasses;
+using DbGovernator.Realisations;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +15,15 @@ namespace DbGovernator
     // Проверяет select-запросы и ExecuteReader
     internal class TestSelect
     {
-        public string connectionString { get; set; }
+        private IEnumerable<IVisitor> _visitors;
+        private ILogger Logger;
+        private IConnectionStringProvider _connectionStringProvider;
         public string command { get; set; }
+        public void SetupCommand(string command)
+        {
+            this.command = command;
+        }
+
         public async Task SelectQ()
         {
             if (!command.ToLower().Contains("select"))
@@ -22,8 +33,8 @@ namespace DbGovernator
             }
             try
             {
-                var dataSource = NpgsqlDataSource.Create(connectionString);
-                var NDataSource = new NDbDataSource(dataSource);
+                var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
+                var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
                 await using (var cmd = NDataSource.CreateCommand(command))
                 await using (var reader = await cmd.ExecuteReaderAsync())
                 {
@@ -42,10 +53,11 @@ namespace DbGovernator
             }
             Console.WriteLine("Test passed");
         }
-        public TestSelect(string command, string connectionString)
+        public TestSelect(IConnectionStringProvider connectionStringProvider, IEnumerable<IVisitor> visitors, ILogger logger)
         {
-            this.command = command;
-            this.connectionString = connectionString;
+            this._connectionStringProvider= connectionStringProvider;
+            _visitors = visitors;
+            Logger = logger;
         }
     }
 }

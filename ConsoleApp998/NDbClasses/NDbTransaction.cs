@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbGovernator.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
@@ -6,22 +7,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DbGovernator
+namespace DbGovernator.NDbClasses
 {
     // Реализует IDbTransaction
-    internal class NDbTransaction : IDbTransaction
+    public class NDbTransaction : DbTransaction
     {
         private DbTransaction _innerTransaction;
-        public IDbConnection? Connection => _innerTransaction?.Connection;
+        private IEnumerable<IVisitor> _visitors;
+        private ILogger _logger;
 
-        public IsolationLevel IsolationLevel => _innerTransaction.IsolationLevel;
+        public override IsolationLevel IsolationLevel => _innerTransaction.IsolationLevel;
 
-        public NDbTransaction(DbTransaction innerTransaction)
+        protected override DbConnection? DbConnection => _innerTransaction?.Connection;
+
+        public NDbTransaction(DbTransaction innerTransaction, IEnumerable<IVisitor> visitors, ILogger logger)
         {
             _innerTransaction = innerTransaction;
+            _visitors = visitors;
+            _logger = logger;
         }
 
-        public void Commit()
+        public override void Commit()
         {
             _innerTransaction.Commit();
         }
@@ -31,7 +37,7 @@ namespace DbGovernator
             _innerTransaction?.Dispose();
         }
 
-        public void Rollback()
+        public override void Rollback()
         {
             _innerTransaction?.Rollback();
         }

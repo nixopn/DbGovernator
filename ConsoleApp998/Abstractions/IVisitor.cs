@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DbGovernator
+namespace DbGovernator.Abstractions
 {
     // Интерфейс посетителей
     // Имеет методы на все шаги выполнения команд
-    interface IVisitor
+    public interface IVisitor
     {
         public bool hadException { get; set; }
         public ILogger Logger { get; set; }

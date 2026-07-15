@@ -1,4 +1,8 @@
-﻿using Npgsql;
+﻿using DbGovernator;
+using DbGovernator.Abstractions;
+using DbGovernator.NDbClasses;
+using DbGovernator.Realisations;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +15,15 @@ namespace DbGovernator
     // Проверяет insert-запросы
     internal class TestInsert
     {
-        public string connectionString {  get; set; }
+        private IEnumerable<IVisitor> _visitors;
+        private ILogger _logger;
+        private IConnectionStringProvider _connectionStringProvider;
         public string command {  get; set; }
+
+        public void SetupCommand(string command)
+        {
+            this.command = command;
+        }
         public async Task InsertQ()
         {
             if(!command.ToLower().Contains("insert"))
@@ -22,8 +33,8 @@ namespace DbGovernator
             }
             try
             {
-                var dataSource = NpgsqlDataSource.Create(connectionString);
-                var NDataSource = new NDbDataSource(dataSource);
+                var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
+                var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
                 await using (var cmd = NDataSource.CreateCommand(command))
                 {
                     await cmd.ExecuteNonQueryAsync();
@@ -37,10 +48,11 @@ namespace DbGovernator
             }
             Console.WriteLine("Test passed");
         }
-        public TestInsert(string command, string connectionString)
+        public TestInsert(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider)
         {
-            this.command = command;
-            this.connectionString = connectionString;
+            _visitors = visitors;
+            _logger = logger;
+            _connectionStringProvider = connectionStringProvider;
         }
     }
 }

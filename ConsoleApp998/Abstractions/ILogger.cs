@@ -1,13 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace DbGovernator
+namespace DbGovernator.Abstractions
 {
     // Интерфейс для логирования метрик и аудита по ходу выполнения команд.
-    internal interface ILogger
+    public interface ILogger
     {
         public string Message { get; set; }
         void Log(string Message);
