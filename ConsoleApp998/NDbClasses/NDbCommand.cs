@@ -98,6 +98,8 @@ namespace DbGovernator.NDbClasses
 
 
 
+
+
         // Добавляет посетителя
         public void AddVisitor(IVisitor visitor)
         {

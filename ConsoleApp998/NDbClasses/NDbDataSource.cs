@@ -1,4 +1,5 @@
 ﻿using DbGovernator.Abstractions;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -29,16 +30,21 @@ namespace DbGovernator.NDbClasses
         }
         public new NDbCommand CreateCommand(string? commandText = null)
         {
-            var cmd = base.CreateCommand(commandText);
-            var retCmd = new NDbCommand(cmd, _visitors, _logger);
-            return retCmd;
+            return (NDbCommand)CreateDbCommand(commandText);
+        }
+
+
+        protected override DbCommand CreateDbCommand(string? commandText = null)
+        {
+            var innerCommand = _innerDataSource.CreateCommand(commandText);
+            return new NDbCommand(innerCommand, _visitors, _logger);
         }
 
 
         public async Task<DbConnection> OpenConnectionAsync()
         {
             var connection = await _innerDataSource.OpenConnectionAsync();
-            return connection;
+            return new NDbConnection(connection, _visitors, _logger);
         }
 
         public DbConnection OpenConnection()
@@ -47,5 +53,6 @@ namespace DbGovernator.NDbClasses
             return returncon;
         }
     }
+
 }
 

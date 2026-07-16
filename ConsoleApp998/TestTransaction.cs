@@ -16,7 +16,7 @@ namespace DbGovernator
     internal class TestTransaction
     {
         private IEnumerable<IVisitor> _visitors;
-        private ILogger Logger;
+        private ILogger _logger;
         private IConnectionStringProvider _connectionStringProvider;
         public string connectionString { get; set; }
         public string command1 { get; set; }
@@ -28,15 +28,19 @@ namespace DbGovernator
         {
             try
             {
-                var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
-                var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
+                //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
+                //var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
+                var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
+                //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
+                //var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
+                var NDataSource = NDDataSourceFactory.Create();
                 await using var con = await NDataSource.OpenConnectionAsync();
                 await using var transaction = await con.BeginTransactionAsync();
                 await using var cmd1 = new NpgsqlCommand(command1);
-                await using var cmd11 = new NDbCommand(cmd1, con, transaction, _visitors, Logger);
+                await using var cmd11 = new NDbCommand(cmd1, con, transaction, _visitors, _logger);
                 await cmd11.ExecuteNonQueryAsync();
                 await using var cmd2 = new NpgsqlCommand(command2);
-                await using var cmd22 = new NDbCommand(cmd2, con, transaction, _visitors, Logger);
+                await using var cmd22 = new NDbCommand(cmd2, con, transaction, _visitors, _logger);
                 await cmd22.ExecuteNonQueryAsync();
                 await transaction.CommitAsync();
             }
@@ -52,8 +56,12 @@ namespace DbGovernator
         // Проверка ситуации конфликта транзакций
         public async Task TestConflict()
         {
-            var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
-            var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
+            //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
+            //var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
+            var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
+            //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
+            //var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
+            var NDataSource = NDDataSourceFactory.Create();
             Task transaction1 = Task.Run(async () =>
             {
                 await using var con = await NDataSource.OpenConnectionAsync();
@@ -61,11 +69,11 @@ namespace DbGovernator
                 try
                 {
                     await using var cmd1 = new NpgsqlCommand(command1);
-                    await using var cmd11 = new NDbCommand(cmd1, con, transaction, _visitors, Logger);
+                    await using var cmd11 = new NDbCommand(cmd1, con, transaction, _visitors, _logger);
                     await cmd11.ExecuteNonQueryAsync();
                     await Task.Delay(1000);
                     await using var cmd2 = new NpgsqlCommand(command2);
-                    await using var cmd22 = new NDbCommand(cmd2, con, transaction, _visitors, Logger);
+                    await using var cmd22 = new NDbCommand(cmd2, con, transaction, _visitors, _logger);
                     await cmd22.ExecuteNonQueryAsync();
                     await transaction.CommitAsync();
                 }
@@ -84,11 +92,11 @@ namespace DbGovernator
                 try
                 {
                     await using var cmd1 = new NpgsqlCommand(command2);
-                    await using var cmd11 = new NDbCommand(cmd1, con, transaction, _visitors, Logger);
+                    await using var cmd11 = new NDbCommand(cmd1, con, transaction, _visitors, _logger);
                     await cmd11.ExecuteNonQueryAsync();
                     await Task.Delay(1000);
                     await using var cmd2 = new NpgsqlCommand(command1);
-                    await using var cmd22 = new NDbCommand(cmd2, con, transaction, _visitors, Logger);
+                    await using var cmd22 = new NDbCommand(cmd2, con, transaction, _visitors, _logger);
                     await cmd22.ExecuteNonQueryAsync();
                     await transaction.CommitAsync();
                 }
@@ -127,7 +135,7 @@ namespace DbGovernator
         { 
             _connectionStringProvider = connectionStringProvider;
             _visitors = visitors;
-            Logger = logger;
+            _logger = logger;
         }
     }
 }

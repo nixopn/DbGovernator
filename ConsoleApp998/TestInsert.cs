@@ -33,8 +33,10 @@ namespace DbGovernator
             }
             try
             {
-                var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
-                var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
+                var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
+                //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
+                //var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
+                var NDataSource = NDDataSourceFactory.Create();
                 await using (var cmd = NDataSource.CreateCommand(command))
                 {
                     await cmd.ExecuteNonQueryAsync();

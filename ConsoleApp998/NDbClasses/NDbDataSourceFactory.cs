@@ -24,7 +24,6 @@ namespace DbGovernator.NDbClasses
         {
             var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
             var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
-            //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
             return NDataSource;
         }
     }

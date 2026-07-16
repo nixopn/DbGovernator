@@ -16,7 +16,7 @@ namespace DbGovernator
     internal class TestSelect
     {
         private IEnumerable<IVisitor> _visitors;
-        private ILogger Logger;
+        private ILogger _logger;
         private IConnectionStringProvider _connectionStringProvider;
         public string command { get; set; }
         public void SetupCommand(string command)
@@ -33,8 +33,12 @@ namespace DbGovernator
             }
             try
             {
-                var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
-                var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
+                //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
+                //var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
+                var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
+                //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
+                //var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
+                var NDataSource = NDDataSourceFactory.Create();
                 await using (var cmd = NDataSource.CreateCommand(command))
                 await using (var reader = await cmd.ExecuteReaderAsync())
                 {
@@ -57,7 +61,7 @@ namespace DbGovernator
         {
             this._connectionStringProvider= connectionStringProvider;
             _visitors = visitors;
-            Logger = logger;
+            _logger = logger;
         }
     }
 }
