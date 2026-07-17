@@ -97,5 +97,10 @@ namespace DbGovernator.NDbClasses
             return new NDbCommand(_innerConnection.CreateCommand(), _visitors, _logger);
         }
 
+
+        public DbConnection GetConnection()
+        {
+            return _innerConnection;
+        }
     }
 }

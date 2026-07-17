@@ -26,6 +26,8 @@ namespace DbGovernator
         }
         public async Task InsertQ()
         {
+            Console.WriteLine("Testing insert query");
+            Console.WriteLine("*****************************");
             if(!command.ToLower().Contains("insert"))
             {
                 Console.WriteLine("Invalid command");
@@ -46,9 +48,10 @@ namespace DbGovernator
             {
                 Console.WriteLine("Test failed");
                 Console.WriteLine(ex.Message);
-                return;
+                Console.WriteLine("*****************************");
             }
             Console.WriteLine("Test passed");
+            Console.WriteLine("*****************************");
         }
         public TestInsert(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider)
         {

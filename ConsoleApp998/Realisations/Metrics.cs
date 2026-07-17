@@ -22,9 +22,20 @@ namespace DbGovernator.Realisations
             Logger.Log($"Rows Affected: {context.affectedRows}");
         }
 
+        public async Task VisitResultProcessingAsync(ExecutionContext context)
+        {
+            Logger.Log($"Duration: {context.Duration.TotalMilliseconds}");
+            Logger.Log($"Rows Affected: {context.affectedRows}");
+        }
+
         public void VisitAfterExecution(ExecutionContext context)
         {
             context.After = DateTime.Now;
+        }
+
+        public async Task VisitAfterExecutionAsync(ExecutionContext context) 
+        { 
+            context.After = DateTime.Now; 
         }
 
         public void VisitBeforeExecution(ExecutionContext context)
@@ -32,11 +43,22 @@ namespace DbGovernator.Realisations
             context.Before = DateTime.Now;
         }
 
+        public async Task VisitBeforeExecutionAsync(ExecutionContext context) 
+        { 
+            context.Before = DateTime.Now; 
+        }
+
         public void VisitExecution(ExecutionContext context) { }
+        public async Task VisitExecutionAsync(ExecutionContext context) { }
 
         public void VisitPreparing(ExecutionContext context)
         {
             Logger.Log($"SQL: {context.Command.CommandText}");
+        }
+
+        public async Task VisitPreparingAsync(ExecutionContext context) 
+        { 
+            Logger.Log($"SQL: {context.Command.CommandText}"); 
         }
     }
 }

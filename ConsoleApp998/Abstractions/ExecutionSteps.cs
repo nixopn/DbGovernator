@@ -21,6 +21,7 @@ namespace DbGovernator.Abstractions
     public abstract class ExecutionStep
     {
         public abstract void AcceptVisitor(IVisitor visitor, ExecutionContext context);
+        public abstract Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context);
     }
 
 }

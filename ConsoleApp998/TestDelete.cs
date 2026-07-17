@@ -26,6 +26,8 @@ namespace DbGovernator
         }
         public async Task DeleteQ()
         {
+            Console.WriteLine("Testing delete query");
+            Console.WriteLine("*****************************");
             if (!command.ToLower().Contains("delete"))
             {
                 Console.WriteLine("Invalid command");
@@ -48,9 +50,11 @@ namespace DbGovernator
             {
                 Console.WriteLine("Test failed");
                 Console.WriteLine(ex.Message);
+                Console.WriteLine("*****************************");
                 return;
             }
             Console.WriteLine("Test passed");
+            Console.WriteLine("*****************************");
         }
         public TestDelete(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider)
         {

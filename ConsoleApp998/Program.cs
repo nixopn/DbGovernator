@@ -31,22 +31,22 @@ namespace app
             services.AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
             using (var serviceProvider = services.BuildServiceProvider())
             {
-                //var testInsert = serviceProvider.GetService<TestInsert>();
-                //testInsert.SetupCommand("INSERT INTO users(name) VALUES ('aaaaaaaa');");
-                //await testInsert.InsertQ();
-                //var testSelect = serviceProvider.GetRequiredService<TestSelect>();
-                //testSelect.SetupCommand("SELECT * from users;");
-                //await testSelect.SelectQ();
-                //var testUpdate = serviceProvider.GetService<TestUpdate>();
-                //testUpdate.SetupCommand("UPDATE accounts SET money = money + 300 WHERE user_id = 3;");
-                //await testUpdate.UpdateQ();
-                //var testDelete = serviceProvider.GetService<TestDelete>();
-                //testDelete.SetupCommand("DELETE from users where id = 27");
-                //await testDelete.DeleteQ();
-                //var testTransaction = serviceProvider.GetRequiredService<TestTransaction>();
-                //testTransaction.SetupCommands("UPDATE accounts SET money = money + 200 WHERE user_id = 8", "UPDATE accounts SET money = money + 300 WHERE user_id = 9");
-                //await testTransaction.TestBasic();
-                //await testTransaction.TestConflict();
+                var testInsert = serviceProvider.GetService<TestInsert>();
+                testInsert.SetupCommand("INSERT INTO users(name) VALUES ('aaaaaaaa');");
+                await testInsert.InsertQ();
+                var testSelect = serviceProvider.GetRequiredService<TestSelect>();
+                testSelect.SetupCommand("SELECT * from users;");
+                await testSelect.SelectQ();
+                var testUpdate = serviceProvider.GetService<TestUpdate>();
+                testUpdate.SetupCommand("UPDATE accounts SET money = money + 300 WHERE user_id = 3;");
+                await testUpdate.UpdateQ();
+                var testDelete = serviceProvider.GetService<TestDelete>();
+                testDelete.SetupCommand("DELETE from users where id = 27");
+                await testDelete.DeleteQ();
+                var testTransaction = serviceProvider.GetRequiredService<TestTransaction>();
+                testTransaction.SetupCommands("UPDATE accounts SET money = money + 200 WHERE user_id = 8", "UPDATE accounts SET money = money + 300 WHERE user_id = 9");
+                await testTransaction.TestBasic();
+                await testTransaction.TestConflict();
                 INDbDataSourceFactory dataSourceFactory = serviceProvider.GetService<INDbDataSourceFactory>();
                 var NdataSource = dataSourceFactory.Create();
                 Console.WriteLine(NdataSource.GetType().Name);

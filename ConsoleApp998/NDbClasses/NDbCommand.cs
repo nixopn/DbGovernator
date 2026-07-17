@@ -20,6 +20,7 @@ namespace DbGovernator.NDbClasses
         // Списки шагов выполнения и посетителей, задаются в конструкторе (пока что)
         private List<ExecutionStep> _executionSteps;
         private List<IVisitor> _visitors;
+        private ILogger _logger;
 
 
         // Текст команды
@@ -48,6 +49,7 @@ namespace DbGovernator.NDbClasses
                 new ResultProcessing()
             };
             _visitors = visitors.ToList();
+            _logger = Logger;
             foreach (var visitor in _visitors)
             {
                 visitor.Logger = Logger;
@@ -77,6 +79,7 @@ namespace DbGovernator.NDbClasses
                 new ResultProcessing()
             };
             _visitors = visitors.ToList();
+            _logger = Logger;
             foreach (var visitor in _visitors)
             {
                 visitor.Logger = Logger;
@@ -90,10 +93,15 @@ namespace DbGovernator.NDbClasses
             var executionContext = new ExecutionContext();
             executionContext.Command = innerCommand;
             _innerCommand = innerCommand;
-            _innerCommand.Connection = connection;
-            _innerCommand.Transaction = transaction;
-            Connection = connection;
-            Transaction = transaction;
+            if (connection is NDbConnection con && transaction is NDbTransaction trs)
+            {
+                _innerCommand.Connection = con.GetConnection();
+                _innerCommand.Transaction = trs.GetTransaction();
+            }
+            //_innerCommand.Connection = connection;
+            //_innerCommand.Transaction = transaction;
+            //Connection = connection;
+            //Transaction = transaction;
         }
 
 
@@ -140,7 +148,7 @@ namespace DbGovernator.NDbClasses
 
 
         // Выполнение шагов для асинхронных методов
-        private new async Task<T> ExecuteStepsAsync<T>(Func<Task<T>> executeFunc, ExecutionContext executionContext)
+        private async Task<T> ExecuteStepsAsync<T>(Func<Task<T>> executeFunc, ExecutionContext executionContext)
         {
             executionContext.executionFunction = executeFunc;
             foreach (var step in _executionSteps)
@@ -153,12 +161,12 @@ namespace DbGovernator.NDbClasses
                     }
                     try
                     {
-                        step.AcceptVisitor(visitor, executionContext);
+                        await step.AcceptVisitorAsync(visitor, executionContext);
                     }
                     catch (Exception ex)
                     {
                         visitor.hadException = true;
-                        Console.WriteLine(ex.Message);
+                        _logger.Log(ex.Message);
                     }
                     //step.AcceptVisitor(visitor, executionContext);
                 }
@@ -193,13 +201,17 @@ namespace DbGovernator.NDbClasses
                     catch (Exception ex)
                     {
                         visitor.hadException = true;
-                        Console.WriteLine(ex.Message);
+                        _logger.Log(ex.Message);
                     }
                     //step.AcceptVisitor(visitor, executionContext);
                 }
             }
             if (executionContext.Result == null)
             {
+                foreach (var visitor in _visitors)
+                {
+                    visitor.hadException = false;
+                }
                 throw new Exception("Command execution failed, result is null");
             }
             return (T)executionContext.Result;
@@ -315,7 +327,13 @@ namespace DbGovernator.NDbClasses
 
         protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
         {
-            return _innerCommand.ExecuteReader(behavior);
+            var executionContext = new ExecutionContext();
+            executionContext.Command = _innerCommand;
+
+            var result = ExecuteSteps<DbDataReader>(() => _innerCommand.ExecuteReader(behavior), executionContext);
+            executionContext.Result = result;
+            return result;
+            //return _innerCommand.ExecuteReader(behavior);
         }
     }
 }

@@ -13,6 +13,11 @@ namespace DbGovernator.Realisations
         {
             visitor.VisitBeforeExecution(context);
         }
+
+        public async override Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context)
+        {
+            await visitor.VisitBeforeExecutionAsync(context);
+        }
     }
 
     public class PrepareCommand : ExecutionStep
@@ -20,6 +25,11 @@ namespace DbGovernator.Realisations
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {
             visitor.VisitPreparing(context);
+        }
+
+        public async override Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context)
+        {
+            await visitor.VisitPreparingAsync(context);
         }
     }
 
@@ -29,6 +39,11 @@ namespace DbGovernator.Realisations
         {
             visitor.VisitAfterExecution(context);
         }
+
+        public async override Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context)
+        {
+            await visitor.VisitAfterExecutionAsync(context);
+        }
     }
 
     public class ResultProcessing : ExecutionStep
@@ -37,6 +52,11 @@ namespace DbGovernator.Realisations
         {
             visitor.VisitResultProcessing(context);
         }
+
+        public async override Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context)
+        {
+            await visitor.VisitResultProcessingAsync(context);
+        }
     }
 
     public class ExecutionSt : ExecutionStep
@@ -44,6 +64,11 @@ namespace DbGovernator.Realisations
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {
             visitor.VisitExecution(context);
+        }
+
+        public async override Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context)
+        {
+            await visitor.VisitExecutionAsync(context);
         }
     }
 }

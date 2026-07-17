@@ -22,6 +22,15 @@ namespace DbGovernator.Realisations
         public void VisitBeforeExecution(ExecutionContext context) { }
 
         public void VisitExecution(ExecutionContext context) { }
+        
+        
+        public async Task VisitBeforeExecutionAsync(ExecutionContext context) { }
+        
+        public async Task VisitExecutionAsync(ExecutionContext context) { }
+        
+        public async Task VisitAfterExecutionAsync(ExecutionContext context) { }
+        
+        public async Task VisitResultProcessingAsync(ExecutionContext context) { }
 
         public void VisitPreparing(ExecutionContext context)
         {
@@ -57,5 +66,41 @@ namespace DbGovernator.Realisations
             Logger.Log($"Query type: {context.queryType}");
             Logger.Log($"Table name: {context.tableName}");
         }
+
+        public async Task VisitPreparingAsync(ExecutionContext context) 
+        {
+            var commandText = context.Command.CommandText;
+            if (commandText.ToLower().Contains("select"))
+            {
+                context.queryType = "select";
+            }
+            else if (commandText.ToLower().Contains("update"))
+            {
+                context.queryType = "update";
+            }
+            else if (commandText.ToLower().Contains("insert"))
+            {
+                context.queryType = "insert";
+            }
+            else if (commandText.ToLower().Contains("delete"))
+            {
+                context.queryType = "delete";
+            }
+            else
+            {
+                context.queryType = "unkown";
+            }
+            var patterns = new[]
+            {
+                @"(?i)(from|into|update|delete\s+from)\s+(\w+)"
+            };
+            var match = Regex.Match(commandText, patterns[0]);
+            context.tableName = match.Groups[2].Value;
+
+
+            Logger.Log($"Query type: {context.queryType}");
+            Logger.Log($"Table name: {context.tableName}");
+        }
     }
+
 }

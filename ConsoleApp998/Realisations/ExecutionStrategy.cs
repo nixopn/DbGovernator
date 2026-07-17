@@ -109,6 +109,62 @@ namespace DbGovernator.Realisations
         }
 
 
+        public async Task VisitBeforeExecutionAsync(ExecutionContext context) { }
+
+        public async Task VisitExecutionAsync(ExecutionContext context) 
+        {
+            int i = 1;
+            do
+            {
+                try
+                {
+                    var result = context.executionFunction();
+                    if (result is int)
+                    {
+                        context.Result = result;
+                        context.affectedRows = (int)result;
+                        return;
+                    }
+                    if (result is not Task)
+                    {
+                        context.Result = result;
+                        return;
+                    }
+                    //context.Result = result.GetType().GetProperty("Result").GetValue(result);
+                    context.Result = result.GetType().GetProperty("Result").GetValue(result);
+                    // Если результат int в случае ExecuteNonQuery, ExecuteScalar, то записывает в affectedRows
+                    if (context.Result is int)
+                    {
+                        context.affectedRows = (int)context.Result;
+                    }
+                    return;
+                }
+                catch (Exception ex)
+                {
+                    if (!HasDbException(ex))
+                    {
+                        throw new Exception("Not an sql exception", ex);
+                    }
+                    // Console.WriteLine(ex.Message);
+                    //Thread.Sleep(_retryDelayMs);
+                    Task.Delay(_retryDelayMs).Wait();
+                    Logger.Log($"Retrying {i} time");
+                    if (i == _maxRetries)
+                    {
+                        throw new Exception("Service is temporary unavailable", ex);
+                    }
+                }
+                i++;
+            } while (i <= _maxRetries);
+            return;
+        }
+
+        public async Task VisitAfterExecutionAsync(ExecutionContext context) { }
+
+        public async Task VisitResultProcessingAsync(ExecutionContext context) { }
+        public async Task VisitPreparingAsync(ExecutionContext context) { }
+
+
         private bool HasDbException(Exception ex)
         {
             if(ex == null)

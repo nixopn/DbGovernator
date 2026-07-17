@@ -6,6 +6,8 @@ using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.InteropServices;
+using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,36 +28,45 @@ namespace DbGovernator
         // Проверка базовой транзакции
         public async Task TestBasic()
         {
+            Console.WriteLine("Testing basic transaction");
+            Console.WriteLine("*****************************");
             try
             {
-                //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
-                //var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
-                var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
-                //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
-                //var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
-                var NDataSource = NDDataSourceFactory.Create();
-                await using var con = await NDataSource.OpenConnectionAsync();
-                await using var transaction = await con.BeginTransactionAsync();
-                await using var cmd1 = new NpgsqlCommand(command1);
-                await using var cmd11 = new NDbCommand(cmd1, con, transaction, _visitors, _logger);
-                await cmd11.ExecuteNonQueryAsync();
-                await using var cmd2 = new NpgsqlCommand(command2);
-                await using var cmd22 = new NDbCommand(cmd2, con, transaction, _visitors, _logger);
-                await cmd22.ExecuteNonQueryAsync();
-                await transaction.CommitAsync();
+                var NDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
+                var NDataSource = NDataSourceFactory.Create();
+                using (var con = await NDataSource.OpenConnectionAsync())
+                using (var trs = await con.BeginTransactionAsync())
+                    {
+                        using (var cmd1 = con.CreateCommand())
+                        {
+                            cmd1.CommandText = command1;
+                            await cmd1.ExecuteNonQueryAsync();
+                        }
+                        await Task.Delay(1000);
+                        using (var cmd2 = con.CreateCommand())
+                        {
+                            cmd2.CommandText = command2;
+                            await cmd2.ExecuteNonQueryAsync();
+                        }
+                        await trs.CommitAsync();
+                    }
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Test failed \n {ex.Message}");
+                Console.WriteLine("*****************************");
                 return;
             }
             Console.WriteLine("Test passed");
+            Console.WriteLine("*****************************");
         }
 
 
         // Проверка ситуации конфликта транзакций
         public async Task TestConflict()
         {
+            Console.WriteLine("Testing conflict of transactions");
+            Console.WriteLine("*****************************");
             //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
             //var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
             var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
@@ -64,48 +75,62 @@ namespace DbGovernator
             var NDataSource = NDDataSourceFactory.Create();
             Task transaction1 = Task.Run(async () =>
             {
-                await using var con = await NDataSource.OpenConnectionAsync();
-                await using var transaction = await con.BeginTransactionAsync();
-                try
+                using (var con = await NDataSource.OpenConnectionAsync())
+                using (var transaction = await con.BeginTransactionAsync())
                 {
-                    await using var cmd1 = new NpgsqlCommand(command1);
-                    await using var cmd11 = new NDbCommand(cmd1, con, transaction, _visitors, _logger);
-                    await cmd11.ExecuteNonQueryAsync();
-                    await Task.Delay(1000);
-                    await using var cmd2 = new NpgsqlCommand(command2);
-                    await using var cmd22 = new NDbCommand(cmd2, con, transaction, _visitors, _logger);
-                    await cmd22.ExecuteNonQueryAsync();
-                    await transaction.CommitAsync();
-                }
-                catch (Exception ex)
-                {
+                    try
+                    {
+                        await using (var cmd1 = con.CreateCommand())
+                        {
+                            cmd1.CommandText = command1;
+                            await cmd1.ExecuteNonQueryAsync();
+                        }
+                        await Task.Delay(1000);
+                        await using (var cmd2 = con.CreateCommand())
+                        {
+                            cmd2.CommandText = command2;
+                            await cmd2.ExecuteNonQueryAsync();
+                        }
+                        await transaction.CommitAsync();
+                    }
+                    catch (Exception ex)
+                    {
 
-                    Console.WriteLine($"Transaction 1 {ex.Message}");
-                    await transaction.RollbackAsync();
-                    throw;
+                        Console.WriteLine($"Transaction 1 {ex.Message}");
+                        await transaction.RollbackAsync();
+                        Console.WriteLine("*****************************");
+                        throw;
+                    }
                 }
             });
             Task transaction2 = Task.Run(async () =>
             {
-                await using var con = await NDataSource.OpenConnectionAsync();
-                await using var transaction = await con.BeginTransactionAsync();
-                try
+                await using (var con = await NDataSource.OpenConnectionAsync())
+                await using (var transaction = await con.BeginTransactionAsync())
                 {
-                    await using var cmd1 = new NpgsqlCommand(command2);
-                    await using var cmd11 = new NDbCommand(cmd1, con, transaction, _visitors, _logger);
-                    await cmd11.ExecuteNonQueryAsync();
-                    await Task.Delay(1000);
-                    await using var cmd2 = new NpgsqlCommand(command1);
-                    await using var cmd22 = new NDbCommand(cmd2, con, transaction, _visitors, _logger);
-                    await cmd22.ExecuteNonQueryAsync();
-                    await transaction.CommitAsync();
-                }
-                catch (Exception ex)
-                {
+                    try
+                    {
+                        await using (var cmd1 = con.CreateCommand())
+                        {
+                            cmd1.CommandText = command2;
+                            await cmd1.ExecuteNonQueryAsync();
+                        }
+                        await Task.Delay(1000);
+                        await using (var cmd2 = con.CreateCommand())
+                        {
+                            cmd2.CommandText = command1;
+                            await cmd2.ExecuteNonQueryAsync();
+                        }
+                        await transaction.CommitAsync();
+                    }
+                    catch (Exception ex)
+                    {
 
-                    Console.WriteLine($"Transaction 2 {ex.Message} \n");
-                    await transaction.RollbackAsync();
-                    throw;
+                        Console.WriteLine($"Transaction 2 {ex.Message}");
+                        await transaction.RollbackAsync();
+                        Console.WriteLine("*****************************");
+                        throw;
+                    }
                 }
             });
             try
@@ -117,9 +142,11 @@ namespace DbGovernator
             {
                 Console.WriteLine("Test failed");
                 Console.WriteLine($"Error in some transaction {ex.Message}");
+                Console.WriteLine("*****************************");
                 return;
             }
             Console.WriteLine("No conflict");
+            Console.WriteLine("*****************************");
         }
 
 

@@ -28,10 +28,6 @@ namespace DbGovernator.NDbClasses
         {
             return new NDbConnection(_innerDataSource.CreateConnection(), _visitors, _logger);
         }
-        public new NDbCommand CreateCommand(string? commandText = null)
-        {
-            return (NDbCommand)CreateDbCommand(commandText);
-        }
 
 
         protected override DbCommand CreateDbCommand(string? commandText = null)

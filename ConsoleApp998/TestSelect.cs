@@ -26,6 +26,8 @@ namespace DbGovernator
 
         public async Task SelectQ()
         {
+            Console.WriteLine("Testing select query");
+            Console.WriteLine("*****************************");
             if (!command.ToLower().Contains("select"))
             {
                 Console.WriteLine("Invlaid command");
@@ -53,9 +55,11 @@ namespace DbGovernator
             {
                 Console.WriteLine("Test failed");
                 Console.WriteLine(ex.Message);
+                Console.WriteLine("*****************************");
                 return;
             }
             Console.WriteLine("Test passed");
+            Console.WriteLine("*****************************");
         }
         public TestSelect(IConnectionStringProvider connectionStringProvider, IEnumerable<IVisitor> visitors, ILogger logger)
         {

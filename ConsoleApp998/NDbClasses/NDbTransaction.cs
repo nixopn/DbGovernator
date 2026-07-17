@@ -56,5 +56,11 @@ namespace DbGovernator.NDbClasses
         {
             await _innerTransaction.RollbackAsync();
         }
+
+
+        public DbTransaction GetTransaction()
+        {
+            return _innerTransaction;
+        }
     }
 }
