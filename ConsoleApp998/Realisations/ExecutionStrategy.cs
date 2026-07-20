@@ -118,24 +118,19 @@ namespace DbGovernator.Realisations
             {
                 try
                 {
-                    var result = context.executionFunction();
-                    if (result is int)
+                    var TaskObj = context.executionFunction();
+                    if(TaskObj is Task task)
                     {
-                        context.Result = result;
-                        context.affectedRows = (int)result;
-                        return;
+                        await task;
+                        var result = task.GetType().GetProperty("Result");
+                        if(result != null)
+                        {
+                            context.Result = result.GetValue(task);
+                        }
                     }
-                    if (result is not Task)
+                    if (context.Result is int affected)
                     {
-                        context.Result = result;
-                        return;
-                    }
-                    //context.Result = result.GetType().GetProperty("Result").GetValue(result);
-                    context.Result = result.GetType().GetProperty("Result").GetValue(result);
-                    // Если результат int в случае ExecuteNonQuery, ExecuteScalar, то записывает в affectedRows
-                    if (context.Result is int)
-                    {
-                        context.affectedRows = (int)context.Result;
+                        context.affectedRows = affected;
                     }
                     return;
                 }
@@ -147,7 +142,7 @@ namespace DbGovernator.Realisations
                     }
                     // Console.WriteLine(ex.Message);
                     //Thread.Sleep(_retryDelayMs);
-                    Task.Delay(_retryDelayMs).Wait();
+                    await Task.Delay(_retryDelayMs);
                     Logger.Log($"Retrying {i} time");
                     if (i == _maxRetries)
                     {

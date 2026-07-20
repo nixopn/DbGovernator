@@ -222,7 +222,7 @@ namespace DbGovernator.NDbClasses
 
 
         // Для выполнения запросов по типу insert, update, delete
-        public new async Task<int> ExecuteNonQueryAsync()
+        public override async Task<int> ExecuteNonQueryAsync(CancellationToken token)
         {
             //var executionContext = new ExecutionContext();
             //executionContext.Command = _innerCommand;
@@ -305,7 +305,7 @@ namespace DbGovernator.NDbClasses
             //return _innerCommand.ExecuteScalar();
         }
 
-        public new async Task<object?> ExecuteScalarAsync()
+        public override async Task<object?> ExecuteScalarAsync(CancellationToken token)
         {
             var executionContext = new ExecutionContext();
             executionContext.Command = _innerCommand;

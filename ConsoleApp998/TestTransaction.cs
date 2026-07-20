@@ -99,7 +99,7 @@ namespace DbGovernator
                         Console.WriteLine($"Transaction 1 {ex.Message}");
                         await transaction.RollbackAsync();
                         Console.WriteLine("*****************************");
-                        throw;
+                        return;
                     }
                 }
             });
@@ -129,14 +129,13 @@ namespace DbGovernator
                         Console.WriteLine($"Transaction 2 {ex.Message}");
                         await transaction.RollbackAsync();
                         Console.WriteLine("*****************************");
-                        throw;
+                        return;
                     }
                 }
             });
             try
             {
-                transaction1.Wait();
-                transaction2.Wait();
+                await Task.WhenAll(transaction1, transaction2);
             }
             catch (Exception ex)
             {
