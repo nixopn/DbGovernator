@@ -54,12 +54,6 @@ namespace DbGovernator.NDbClasses
             {
                 visitor.Logger = Logger;
             }
-            var executionStrategy = _visitors.OfType<ExecutionStrategy>().FirstOrDefault();
-            if (executionStrategy != null)
-            {
-                executionStrategy.SetTries(9);
-                executionStrategy.SetRetryDelay(298);
-            }
             var executionContext = new ExecutionContext();
             executionContext.Command = innerCommand;
             _innerCommand = innerCommand;
@@ -68,7 +62,7 @@ namespace DbGovernator.NDbClasses
 
 
         // Конструктор для команды в транзакции
-        public NDbCommand(DbCommand innerCommand, DbConnection connection, DbTransaction transaction, IEnumerable<IVisitor> visitors, ILogger Logger)
+        public NDbCommand(DbCommand innerCommand, DbConnection connection, IEnumerable<IVisitor> visitors, ILogger Logger, DbTransaction? transaction = null)
         {
             _executionSteps = new List<ExecutionStep>
             {
@@ -84,12 +78,6 @@ namespace DbGovernator.NDbClasses
             {
                 visitor.Logger = Logger;
             }
-            var executionStrategy = _visitors.OfType<ExecutionStrategy>().FirstOrDefault();
-            if (executionStrategy != null)
-            {
-                executionStrategy.SetTries(9);
-                executionStrategy.SetRetryDelay(298);
-            }
             var executionContext = new ExecutionContext();
             executionContext.Command = innerCommand;
             _innerCommand = innerCommand;
@@ -98,10 +86,6 @@ namespace DbGovernator.NDbClasses
                 _innerCommand.Connection = con.GetConnection();
                 _innerCommand.Transaction = trs.GetTransaction();
             }
-            //_innerCommand.Connection = connection;
-            //_innerCommand.Transaction = transaction;
-            //Connection = connection;
-            //Transaction = transaction;
         }
 
 
@@ -224,14 +208,6 @@ namespace DbGovernator.NDbClasses
         // Для выполнения запросов по типу insert, update, delete
         public override async Task<int> ExecuteNonQueryAsync(CancellationToken token)
         {
-            //var executionContext = new ExecutionContext();
-            //executionContext.Command = _innerCommand;
-            //_executionSteps[1].AcceptVisitor(_visitors[1], executionContext);
-            //var ret = _innerCommand.ExecuteNonQueryAsync();
-            //_executionSteps[3].AcceptVisitor(_visitors[1], executionContext);
-            //executionContext.affectedRows = ret.Result;
-            //_executionSteps[4].AcceptVisitor(_visitors[1], executionContext);
-            //return ret.Result;
             var executionContext = new ExecutionContext();
             executionContext.Command = _innerCommand;
 
@@ -240,57 +216,6 @@ namespace DbGovernator.NDbClasses
             return result;
         }
 
-
-        // Для выполнения запросов по типу select
-        public new IDataReader ExecuteReader()
-        {
-            var executionContext = new ExecutionContext();
-            executionContext.Command = _innerCommand;
-
-            var result = ExecuteSteps<IDataReader>(() => _innerCommand.ExecuteReader(), executionContext);
-            executionContext.Result = result;
-            return result;
-            // return _innerCommand.ExecuteReader();
-        }
-
-        public new async Task<DbDataReader> ExecuteReaderAsync()
-        {
-            var executionContext = new ExecutionContext();
-            executionContext.Command = _innerCommand;
-
-            var result = await ExecuteStepsAsync(() => _innerCommand.ExecuteReaderAsync(), executionContext);
-            executionContext.Result = result;
-            return result;
-            //var ret = _innerCommand.ExecuteReaderAsync();
-            //return ret.Result;
-        }
-
-        public new IDataReader ExecuteReader(CommandBehavior behavior)
-        {
-            var executionContext = new ExecutionContext();
-            executionContext.Command = _innerCommand;
-
-            var result = ExecuteSteps<IDataReader>(() => _innerCommand.ExecuteReader(behavior), executionContext);
-            executionContext.Result = result;
-            return result;
-            //return _innerCommand.ExecuteReader(behavior);
-        }
-
-        public new async Task<DbDataReader> ExecuteReaderAsync(CommandBehavior behavior)
-        {
-            var executionContext = new ExecutionContext();
-            executionContext.Command = _innerCommand;
-
-            var result = await ExecuteStepsAsync(() => _innerCommand.ExecuteReaderAsync(behavior), executionContext);
-            executionContext.Result = result;
-            return result;
-            //var ret = _innerCommand.ExecuteReaderAsync(behavior);
-            //return ret.Result;
-        }
-        public new async Task DisposeAsync()
-        {
-            await _innerCommand.DisposeAsync();
-        }
 
 
         // Для выполнения запросов, возвращающих одно конкретное значение
@@ -302,7 +227,6 @@ namespace DbGovernator.NDbClasses
             var result = ExecuteSteps<object?>(() => _innerCommand.ExecuteScalar(), executionContext);
             executionContext.Result = result;
             return result;
-            //return _innerCommand.ExecuteScalar();
         }
 
         public override async Task<object?> ExecuteScalarAsync(CancellationToken token)
@@ -333,7 +257,6 @@ namespace DbGovernator.NDbClasses
             var result = ExecuteSteps<DbDataReader>(() => _innerCommand.ExecuteReader(behavior), executionContext);
             executionContext.Result = result;
             return result;
-            //return _innerCommand.ExecuteReader(behavior);
         }
     }
 }

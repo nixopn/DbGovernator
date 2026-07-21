@@ -40,41 +40,41 @@ namespace DbGovernator.Realisations
         {
             _retryDelayMs = retryDelayMs;
         }
-        public void VisitAfterExecution(ExecutionContext context)
+        public void VisitAfterExecution(AfterExecution step)
         {
 
         }
 
-        public void VisitBeforeExecution(ExecutionContext context)
+        public void VisitBeforeExecution(BeforeExecute step)
         {
 
         }
 
         // Выполнение запроса
-        public void VisitExecution(ExecutionContext context)
+        public void VisitExecution(ExecutionSt step)
         {
             int i = 1;
             do
             {
                 try
                 {
-                    var result = context.executionFunction();
+                    var result = step.Context.executionFunction();
                     if(result is int)
                     {
-                        context.Result = result;
-                        context.affectedRows = (int)result;
+                        step.Context.Result = result;
+                        step.Context.affectedRows = (int)result;
                         return;
                     }
                     if(result is not Task)
                     {
-                        context.Result = result;
+                        step.Context.Result = result;
                         return;
                     }
-                    context.Result = result.GetType().GetProperty("Result").GetValue(result);
+                    step.Context.Result = result.GetType().GetProperty("Result").GetValue(result);
                     // Если результат int в случае ExecuteNonQuery, ExecuteScalar, то записывает в affectedRows
-                    if (context.Result is int)
+                    if (step.Context.Result is int)
                     {
-                        context.affectedRows = (int)context.Result;
+                        step.Context.affectedRows = (int)step.Context.Result;
                     }
                     return;
                 }
@@ -98,39 +98,39 @@ namespace DbGovernator.Realisations
         }
 
 
-        public void VisitPreparing(ExecutionContext context)
+        public void VisitPreparing(PrepareCommand step)
         {
 
         }
 
-        public void VisitResultProcessing(ExecutionContext context)
+        public void VisitResultProcessing(ResultProcessing step)
         {
 
         }
 
 
-        public async Task VisitBeforeExecutionAsync(ExecutionContext context) { }
+        public async Task VisitBeforeExecutionAsync(BeforeExecute step) { }
 
-        public async Task VisitExecutionAsync(ExecutionContext context) 
+        public async Task VisitExecutionAsync(ExecutionSt step)
         {
             int i = 1;
             do
             {
                 try
                 {
-                    var TaskObj = context.executionFunction();
+                    var TaskObj = step.Context.executionFunction();
                     if(TaskObj is Task task)
                     {
                         await task;
                         var result = task.GetType().GetProperty("Result");
                         if(result != null)
                         {
-                            context.Result = result.GetValue(task);
+                            step.Context.Result = result.GetValue(task);
                         }
                     }
-                    if (context.Result is int affected)
+                    if (step.Context.Result is int affected)
                     {
-                        context.affectedRows = affected;
+                        step.Context.affectedRows = affected;
                     }
                     return;
                 }
@@ -154,13 +154,13 @@ namespace DbGovernator.Realisations
             return;
         }
 
-        public async Task VisitAfterExecutionAsync(ExecutionContext context) { }
+        public async Task VisitAfterExecutionAsync(AfterExecution step) { }
 
-        public async Task VisitResultProcessingAsync(ExecutionContext context) { }
-        public async Task VisitPreparingAsync(ExecutionContext context) { }
+        public async Task VisitResultProcessingAsync(ResultProcessing step) { }
+        public async Task VisitPreparingAsync(PrepareCommand step) { }
 
 
-        private bool HasDbException(Exception ex)
+        public virtual bool HasDbException(Exception ex)
         {
             if(ex == null)
             {

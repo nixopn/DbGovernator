@@ -13,17 +13,17 @@ namespace DbGovernator.NDbClasses
     public class NDbTransaction : DbTransaction
     {
         private DbTransaction _innerTransaction;
-        private IEnumerable<IVisitor> _visitors;
+        private IEnumerable<ITransactionVisitor> _transactionVisitors;
         private ILogger _logger;
 
         public override IsolationLevel IsolationLevel => _innerTransaction.IsolationLevel;
 
         protected override DbConnection? DbConnection => _innerTransaction?.Connection;
 
-        public NDbTransaction(DbTransaction innerTransaction, IEnumerable<IVisitor> visitors, ILogger logger)
+        public NDbTransaction(DbTransaction innerTransaction, IEnumerable<ITransactionVisitor> visitors, ILogger logger)
         {
             _innerTransaction = innerTransaction;
-            _visitors = visitors;
+            _transactionVisitors = visitors;
             _logger = logger;
         }
 

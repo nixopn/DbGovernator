@@ -16,49 +16,49 @@ namespace DbGovernator.Realisations
         public bool hadException { get; set; }
         public ILogger Logger { get; set; }
 
-        public void VisitResultProcessing(ExecutionContext context)
+        public void VisitResultProcessing(ResultProcessing step)
         {
-            Logger.Log($"Duration: {context.Duration.TotalMilliseconds}");
-            Logger.Log($"Rows Affected: {context.affectedRows}");
+            Logger.Log($"Duration: {step.Context.Duration.TotalMilliseconds}");
+            Logger.Log($"Rows Affected: {step.Context.affectedRows}");
         }
 
-        public async Task VisitResultProcessingAsync(ExecutionContext context)
+        public async Task VisitResultProcessingAsync(ResultProcessing step)
         {
-            Logger.Log($"Duration: {context.Duration.TotalMilliseconds}");
-            Logger.Log($"Rows Affected: {context.affectedRows}");
+            Logger.Log($"Duration: {step.Context.Duration.TotalMilliseconds}");
+            Logger.Log($"Rows Affected: {step.Context.affectedRows}");
         }
 
-        public void VisitAfterExecution(ExecutionContext context)
+        public void VisitAfterExecution(AfterExecution step)
         {
-            context.After = DateTime.Now;
+            step.Context.After = DateTime.UtcNow;
         }
 
-        public async Task VisitAfterExecutionAsync(ExecutionContext context) 
+        public async Task VisitAfterExecutionAsync(AfterExecution step)
         { 
-            context.After = DateTime.Now; 
+            step.Context.After = DateTime.UtcNow; 
         }
 
-        public void VisitBeforeExecution(ExecutionContext context)
+        public void VisitBeforeExecution(BeforeExecute step)
         {
-            context.Before = DateTime.Now;
+            step.Context.Before = DateTime.UtcNow;
         }
 
-        public async Task VisitBeforeExecutionAsync(ExecutionContext context) 
+        public async Task VisitBeforeExecutionAsync(BeforeExecute step)
         { 
-            context.Before = DateTime.Now; 
+            step.Context.Before = DateTime.UtcNow; 
         }
 
-        public void VisitExecution(ExecutionContext context) { }
-        public async Task VisitExecutionAsync(ExecutionContext context) { }
+        public void VisitExecution(ExecutionSt step) { }
+        public async Task VisitExecutionAsync(ExecutionSt step) { }
 
-        public void VisitPreparing(ExecutionContext context)
+        public void VisitPreparing(PrepareCommand step)
         {
-            Logger.Log($"SQL: {context.Command.CommandText}");
+            Logger.Log($"SQL: {step.Context.Command.CommandText}");
         }
 
-        public async Task VisitPreparingAsync(ExecutionContext context) 
+        public async Task VisitPreparingAsync(PrepareCommand step)
         { 
-            Logger.Log($"SQL: {context.Command.CommandText}"); 
+            Logger.Log($"SQL: {step.Context.Command.CommandText}");
         }
     }
 }

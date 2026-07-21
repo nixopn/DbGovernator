@@ -15,18 +15,20 @@ namespace DbGovernator.NDbClasses
         private DbDataSource _innerDataSource;
         private IEnumerable<IVisitor> _visitors;
         private ILogger _logger;
+        private IEnumerable<ITransactionVisitor> _transactionVisitors;
 
         public override string ConnectionString => _innerDataSource.ConnectionString;
-        public NDbDataSource(DbDataSource innerDataSource, IEnumerable<IVisitor> visitors, ILogger logger)
+        public NDbDataSource(DbDataSource innerDataSource, IEnumerable<IVisitor> visitors,  ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors)
         {
             _innerDataSource = innerDataSource;
             _visitors = visitors;
             _logger = logger;
+            _transactionVisitors = transactionVisitors;
         }
 
         protected override DbConnection CreateDbConnection()
         {
-            return new NDbConnection(_innerDataSource.CreateConnection(), _visitors, _logger);
+            return new NDbConnection(_innerDataSource.CreateConnection(), _visitors, _logger, _transactionVisitors);
         }
 
 
@@ -40,12 +42,12 @@ namespace DbGovernator.NDbClasses
         public async Task<DbConnection> OpenConnectionAsync()
         {
             var connection = await _innerDataSource.OpenConnectionAsync();
-            return new NDbConnection(connection, _visitors, _logger);
+            return new NDbConnection(connection, _visitors, _logger, _transactionVisitors);
         }
 
         public DbConnection OpenConnection()
         {
-            var returncon = new NDbConnection(_innerDataSource.OpenConnection(), _visitors, _logger);
+            var returncon = new NDbConnection(_innerDataSource.OpenConnection(), _visitors, _logger, _transactionVisitors);
             return returncon;
         }
     }

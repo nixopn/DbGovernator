@@ -14,6 +14,7 @@ namespace DbGovernator.NDbClasses
         IEnumerable<IVisitor> _visitors;
         ILogger _logger;
         IConnectionStringProvider _connectionStringProvider;
+        IEnumerable<ITransactionVisitor> _transactionVisitors;
         public NDbDataSourceFactory(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider)
         {
             _visitors = visitors;
@@ -23,7 +24,7 @@ namespace DbGovernator.NDbClasses
         public DbDataSource Create()
         {
             var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
-            var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
+            var NDataSource = new NDbDataSource(dataSource, _visitors, _logger, _transactionVisitors);
             return NDataSource;
         }
     }

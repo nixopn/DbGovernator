@@ -11,12 +11,14 @@ namespace DbGovernator.Realisations
     {
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {
-            visitor.VisitBeforeExecution(context);
+            Context = context;
+            visitor.VisitBeforeExecution(this);
         }
 
         public async override Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context)
         {
-            await visitor.VisitBeforeExecutionAsync(context);
+            Context = context;
+            await visitor.VisitBeforeExecutionAsync(this);
         }
     }
 
@@ -24,12 +26,14 @@ namespace DbGovernator.Realisations
     {
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {
-            visitor.VisitPreparing(context);
+            Context = context;
+            visitor.VisitPreparing(this);
         }
 
         public async override Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context)
         {
-            await visitor.VisitPreparingAsync(context);
+            Context = context;
+            await visitor.VisitPreparingAsync(this);
         }
     }
 
@@ -37,12 +41,14 @@ namespace DbGovernator.Realisations
     {
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {
-            visitor.VisitAfterExecution(context);
+            Context = context;
+            visitor.VisitAfterExecution(this);
         }
 
         public async override Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context)
         {
-            await visitor.VisitAfterExecutionAsync(context);
+            Context = context;
+            await visitor.VisitAfterExecutionAsync(this);
         }
     }
 
@@ -50,12 +56,14 @@ namespace DbGovernator.Realisations
     {
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {
-            visitor.VisitResultProcessing(context);
+            Context = context;
+            visitor.VisitResultProcessing(this);
         }
 
         public async override Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context)
         {
-            await visitor.VisitResultProcessingAsync(context);
+            Context = context;
+            await visitor.VisitResultProcessingAsync(this);
         }
     }
 
@@ -63,12 +71,14 @@ namespace DbGovernator.Realisations
     {
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {
-            visitor.VisitExecution(context);
+            Context = context;
+            visitor.VisitExecution(this);
         }
 
         public async override Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context)
         {
-            await visitor.VisitExecutionAsync(context);
+            Context = context;
+            await visitor.VisitExecutionAsync(this);
         }
     }
 }

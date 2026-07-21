@@ -26,11 +26,11 @@ namespace DbGovernator
         }
         public async Task DeleteQ()
         {
-            Console.WriteLine("Testing delete query");
-            Console.WriteLine("*****************************");
+            _logger.Log("Testing delete query");
+            _logger.Log("*****************************");
             if (!command.ToLower().Contains("delete"))
             {
-                Console.WriteLine("Invalid command");
+                _logger.Log("Invalid command");
                 return;
             }
             try
@@ -48,13 +48,13 @@ namespace DbGovernator
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Test failed");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("*****************************");
+                _logger.Log("Test failed");
+                _logger.Log(ex.Message);
+                _logger.Log("*****************************");
                 return;
             }
-            Console.WriteLine("Test passed");
-            Console.WriteLine("*****************************");
+            _logger.Log("Test passed");
+            _logger.Log("*****************************");
         }
         public TestDelete(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider)
         {

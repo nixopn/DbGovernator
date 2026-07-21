@@ -26,11 +26,11 @@ namespace DbGovernator
 
         public async Task SelectQ()
         {
-            Console.WriteLine("Testing select query");
-            Console.WriteLine("*****************************");
+            _logger.Log("Testing select query");
+            _logger.Log("*****************************");
             if (!command.ToLower().Contains("select"))
             {
-                Console.WriteLine("Invlaid command");
+                _logger.Log("Invlaid command");
                 return;
             }
             try
@@ -46,20 +46,20 @@ namespace DbGovernator
                 {
                     while (await reader.ReadAsync())
                     {
-                        Console.WriteLine($"{reader.GetInt32(0)} {reader.GetString(1)}");
+                        _logger.Log($"{reader.GetInt32(0)} {reader.GetString(1)}");
 
                     }
                 }
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Test failed");
-                Console.WriteLine(ex.Message);
-                Console.WriteLine("*****************************");
+                _logger.Log("Test failed");
+                _logger.Log(ex.Message);
+                _logger.Log("*****************************");
                 return;
             }
-            Console.WriteLine("Test passed");
-            Console.WriteLine("*****************************");
+            _logger.Log("Test passed");
+            _logger.Log("*****************************");
         }
         public TestSelect(IConnectionStringProvider connectionStringProvider, IEnumerable<IVisitor> visitors, ILogger logger)
         {

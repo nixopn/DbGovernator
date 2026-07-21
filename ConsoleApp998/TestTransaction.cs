@@ -28,8 +28,8 @@ namespace DbGovernator
         // Проверка базовой транзакции
         public async Task TestBasic()
         {
-            Console.WriteLine("Testing basic transaction");
-            Console.WriteLine("*****************************");
+            _logger.Log("Testing basic transaction");
+            _logger.Log("*****************************");
             try
             {
                 var NDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
@@ -53,20 +53,20 @@ namespace DbGovernator
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Test failed \n {ex.Message}");
-                Console.WriteLine("*****************************");
+                _logger.Log($"Test failed \n {ex.Message}");
+                _logger.Log("*****************************");
                 return;
             }
-            Console.WriteLine("Test passed");
-            Console.WriteLine("*****************************");
+            _logger.Log("Test passed");
+            _logger.Log("*****************************");
         }
 
 
         // Проверка ситуации конфликта транзакций
         public async Task TestConflict()
         {
-            Console.WriteLine("Testing conflict of transactions");
-            Console.WriteLine("*****************************");
+            _logger.Log("Testing conflict of transactions");
+            _logger.Log("*****************************");
             //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
             //var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
             var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
@@ -96,10 +96,10 @@ namespace DbGovernator
                     catch (Exception ex)
                     {
 
-                        Console.WriteLine($"Transaction 1 {ex.Message}");
+                        _logger.Log($"Transaction 1 {ex.Message}");
                         await transaction.RollbackAsync();
-                        Console.WriteLine("*****************************");
-                        return;
+                        _logger.Log("*****************************");
+                        throw;
                     }
                 }
             });
@@ -126,10 +126,10 @@ namespace DbGovernator
                     catch (Exception ex)
                     {
 
-                        Console.WriteLine($"Transaction 2 {ex.Message}");
+                        _logger.Log($"Transaction 2 {ex.Message}");
                         await transaction.RollbackAsync();
-                        Console.WriteLine("*****************************");
-                        return;
+                        _logger.Log("*****************************");
+                        throw;
                     }
                 }
             });
@@ -139,13 +139,13 @@ namespace DbGovernator
             }
             catch (Exception ex)
             {
-                Console.WriteLine("Test failed");
-                Console.WriteLine($"Error in some transaction {ex.Message}");
-                Console.WriteLine("*****************************");
+                _logger.Log("Test failed");
+                _logger.Log($"Error in some transaction {ex.Message}");
+                _logger.Log("*****************************");
                 return;
             }
-            Console.WriteLine("No conflict");
-            Console.WriteLine("*****************************");
+            _logger.Log("No conflict");
+            _logger.Log("*****************************");
         }
 
 

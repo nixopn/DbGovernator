@@ -15,91 +15,91 @@ namespace DbGovernator.Realisations
 
 
         // Собирает информацию о типе запроса и названии таблицы, на которую он действует
-        public void VisitResultProcessing(ExecutionContext context) { }
+        public void VisitResultProcessing(ResultProcessing step) { }
 
-        public void VisitAfterExecution(ExecutionContext context) { }
+        public void VisitAfterExecution(AfterExecution step) { }
 
-        public void VisitBeforeExecution(ExecutionContext context) { }
+        public void VisitBeforeExecution(BeforeExecute step) { }
 
-        public void VisitExecution(ExecutionContext context) { }
+        public void VisitExecution(ExecutionSt step) { }
         
         
-        public async Task VisitBeforeExecutionAsync(ExecutionContext context) { }
+        public async Task VisitBeforeExecutionAsync(BeforeExecute step) { }
         
-        public async Task VisitExecutionAsync(ExecutionContext context) { }
+        public async Task VisitExecutionAsync(ExecutionSt step) { }
         
-        public async Task VisitAfterExecutionAsync(ExecutionContext context) { }
+        public async Task VisitAfterExecutionAsync(AfterExecution step) { }
         
-        public async Task VisitResultProcessingAsync(ExecutionContext context) { }
+        public async Task VisitResultProcessingAsync(ResultProcessing step) { }
 
-        public void VisitPreparing(ExecutionContext context)
+        public void VisitPreparing(PrepareCommand step)
         {
-            var commandText = context.Command.CommandText;
+            var commandText = step.Context.Command.CommandText;
             if (commandText.ToLower().Contains("select"))
             {
-                context.queryType = "select";
+                step.Context.queryType = "select";
             }
             else if (commandText.ToLower().Contains("update"))
             {
-                context.queryType = "update";
+                step.Context.queryType = "update";
             }
             else if (commandText.ToLower().Contains("insert"))
             {
-                context.queryType = "insert";
+                step.Context.queryType = "insert";
             }
             else if (commandText.ToLower().Contains("delete"))
             {
-                context.queryType = "delete";
+                step.Context.queryType = "delete";
             }
             else
             {
-                context.queryType = "unkown";
+                step.Context.queryType = "unkown";
             }
             var patterns = new[]
             {
                 @"(?i)(from|into|update|delete\s+from)\s+(\w+)"
             };
             var match = Regex.Match(commandText, patterns[0]);
-            context.tableName = match.Groups[2].Value;
+            step.Context.tableName = match.Groups[2].Value;
 
 
-            Logger.Log($"Query type: {context.queryType}");
-            Logger.Log($"Table name: {context.tableName}");
+            Logger.Log($"Query type: {step.Context.queryType}");
+            Logger.Log($"Table name: {step.Context.tableName}");
         }
 
-        public async Task VisitPreparingAsync(ExecutionContext context) 
+        public async Task VisitPreparingAsync(PrepareCommand step)
         {
-            var commandText = context.Command.CommandText;
+            var commandText = step.Context.Command.CommandText;
             if (commandText.ToLower().Contains("select"))
             {
-                context.queryType = "select";
+                step.Context.queryType = "select";
             }
             else if (commandText.ToLower().Contains("update"))
             {
-                context.queryType = "update";
+                step.Context.queryType = "update";
             }
             else if (commandText.ToLower().Contains("insert"))
             {
-                context.queryType = "insert";
+                step.Context.queryType = "insert";
             }
             else if (commandText.ToLower().Contains("delete"))
             {
-                context.queryType = "delete";
+                step.Context.queryType = "delete";
             }
             else
             {
-                context.queryType = "unkown";
+                step.Context.queryType = "unkown";
             }
             var patterns = new[]
             {
                 @"(?i)(from|into|update|delete\s+from)\s+(\w+)"
             };
             var match = Regex.Match(commandText, patterns[0]);
-            context.tableName = match.Groups[2].Value;
+            step.Context.tableName = match.Groups[2].Value;
 
 
-            Logger.Log($"Query type: {context.queryType}");
-            Logger.Log($"Table name: {context.tableName}");
+            Logger.Log($"Query type: {step.Context.queryType}");
+            Logger.Log($"Table name: {step.Context.tableName}");
         }
     }
 

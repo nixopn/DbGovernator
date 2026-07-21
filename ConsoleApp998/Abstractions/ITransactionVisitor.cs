@@ -1,15 +1,13 @@
-﻿using System;
+﻿using DbGovernator.Realisations;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using DbGovernator.Realisations;
 
 namespace DbGovernator.Abstractions
 {
-    // Интерфейс посетителей
-    // Имеет методы на все шаги выполнения команд
-    public interface IVisitor
+    public interface ITransactionVisitor
     {
         public bool hadException { get; set; }
         public ILogger Logger { get; set; }

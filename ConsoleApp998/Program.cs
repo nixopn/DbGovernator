@@ -8,6 +8,10 @@ using System;
 using System.Data;
 using System.Data.Common;
 using System.Reflection;
+using LinqToDB;
+using System.Linq;
+using System.Data.Entity;
+using DbGovernator.LinqToDB;
 
 
 namespace app
@@ -20,6 +24,7 @@ namespace app
             services.AddSingleton<INDbDataSourceFactory, NDbDataSourceFactory>();
             services.AddSingleton<ILogger, ConsoleLogger>();
             services.AddSingleton<IVisitor, Audit>();
+            services.AddSingleton<IVisitor, AccessChecker>();
             services.AddSingleton<IVisitor, Metrics>();
             services.AddSingleton<IVisitor, ExecutionStrategy>();
             services.AddSingleton<TestInsert>();
@@ -29,6 +34,8 @@ namespace app
             services.AddSingleton<TestTransaction>();
             services.AddSingleton<NDbDataSourceFactory>();
             services.AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
+            services.AddSingleton<NDbConnectionFactory>();
+            services.AddSingleton<NDbDataConnection>();
             using (var serviceProvider = services.BuildServiceProvider())
             {
                 var testInsert = serviceProvider.GetService<TestInsert>();
@@ -84,21 +91,36 @@ namespace app
 
                     }
                 }
-                var visitors = serviceProvider.GetRequiredService<IEnumerable<IVisitor>>();
-                var logger = serviceProvider.GetRequiredService<ILogger>();
-                var dataSource = NpgsqlDataSource.Create(new ConnectionStringProvider().GetConnectionString());
-                var DataSourceFactory = new NDbDataSourceFactory(visitors,logger, new ConnectionStringProvider());
-                DbDataSource ee = DataSourceFactory.Create();
-                Console.WriteLine(ee.GetType().Name);
+
+
+                var db = serviceProvider.GetRequiredService<NDbDataConnection>();
+                var selected = db.users.Where(u => u.id == 200);
+                foreach(var u in selected)
+                {
+                    Console.WriteLine($"{u.Name}");
+                }
+
+                //INDbDataSourceFactory dataSourceFactory222 = serviceProvider.GetService<INDbDataSourceFactory>();
+                //var NdataSource222 = dataSourceFactory222.Create();
+                //var ndbcon222 = NdataSource222.OpenConnection();
+                //if(ndbcon222 is NDbConnection con222)
+                //{
+                //    using (var db = new ApplicationContext((NDbDataSource)NdataSource222))
+                //    {
+                //        db.Database.EnsureCreated();
+                //        users u1 = new users() { name = "EF" };
+                //        users u2 = new users() { name = "EFF" };
+                //        db.users.AddRange(u1, u2);
+                //        db.SaveChanges();
+
+                //        var userers = db.users.ToList();
+                //        foreach (var u in userers)
+                //        {
+                //            Console.WriteLine($"{u.id} {u.name}");
+                //        }
+                //    }
+                //}
             }
-            DbDataSource ff = NpgsqlDataSource.Create("Host=localhost;Port=5432;Username=postgres;Password=6888;Database=postgres;Pooling=true;MaxPoolSize=2;Timeout=6;");
-            DbDataSource ff2 = (DbDataSource)ff;
-            var cmddb = ff2.CreateCommand();
-            Console.WriteLine(cmddb.GetType().Name);
-            var dbcon = ff.OpenConnection();
-            Console.WriteLine(dbcon.GetType().Name);
-            var npgsqlCmd = ff.CreateCommand();
-            Console.WriteLine(npgsqlCmd.GetType().Name);
         }
     }
 }
