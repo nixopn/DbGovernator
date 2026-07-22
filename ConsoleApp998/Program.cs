@@ -50,7 +50,7 @@ namespace app
                 var testUpdate = serviceProvider.GetService<TestUpdate>();
                 testUpdate.SetupCommand("UPDATE accounts SET money = money + 300 WHERE user_id = 3;");
                 await testUpdate.UpdateQ();
-                //await testUpdate.UpdateLinqToDB();
+                await testUpdate.UpdateLinqToDB();
                 var testDelete = serviceProvider.GetService<TestDelete>();
                 testDelete.SetupCommand("DELETE from users where id = 27");
                 await testDelete.DeleteQ();
