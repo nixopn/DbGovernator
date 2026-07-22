@@ -15,11 +15,21 @@ namespace DbGovernator.NDbClasses
         ILogger _logger;
         IConnectionStringProvider _connectionStringProvider;
         IEnumerable<ITransactionVisitor> _transactionVisitors;
+
+
         public NDbDataSourceFactory(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider)
         {
             _visitors = visitors;
             _logger = logger;
             _connectionStringProvider = connectionStringProvider;
+        }
+
+        public NDbDataSourceFactory(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider, IEnumerable<ITransactionVisitor> transactionVisitors)
+        {
+            _visitors = visitors;
+            _logger = logger;
+            _connectionStringProvider = connectionStringProvider;
+            _transactionVisitors = transactionVisitors;
         }
         public DbDataSource Create()
         {

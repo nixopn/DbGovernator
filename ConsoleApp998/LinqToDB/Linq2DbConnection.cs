@@ -19,10 +19,10 @@ namespace DbGovernator.LinqToDB
 {
     public class  NDbDataConnection : DataConnection
     {
-        public NDbDataConnection(IEnumerable<IVisitor> visitors, ILogger logger)
+        public NDbDataConnection(IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors)
             : base(new DataOptions()
                   .UsePostgreSQL(PostgreSQLVersion.v15)
-                  .UseConnection(new NDbConnectionFactory(visitors, logger).CreateConnection()))
+                  .UseConnection(new NDbConnectionFactory(visitors, logger, transactionVisitors).CreateConnection()))
         {
             users = this.GetTable<User>();
             accounts = this.GetTable<Account>();

@@ -36,6 +36,7 @@ namespace app
             services.AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
             services.AddSingleton<NDbConnectionFactory>();
             services.AddSingleton<NDbDataConnection>();
+            services.AddSingleton<ITransactionVisitor, TransactionMetrics>();
             using (var serviceProvider = services.BuildServiceProvider())
             {
                 var testInsert = serviceProvider.GetService<TestInsert>();
@@ -104,7 +105,7 @@ namespace app
 
 
                 var deleteusers = await db.users.Where(u => u.id == 997).DeleteAsync();
-                var update = await db.users.Where(u => u.id == 239).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
+                var update = await db.users.Where(u => u.id == 289).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
                 var newUser = new User { Name = "AAALinqToDBUser" };
                 var insertedId = db.Insert(newUser);
 

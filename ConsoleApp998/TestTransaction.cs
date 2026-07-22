@@ -20,6 +20,7 @@ namespace DbGovernator
         private IEnumerable<IVisitor> _visitors;
         private ILogger _logger;
         private IConnectionStringProvider _connectionStringProvider;
+        private IEnumerable<ITransactionVisitor> _transactionVisitors;
         public string connectionString { get; set; }
         public string command1 { get; set; }
         public string command2 { get; set; }
@@ -32,7 +33,7 @@ namespace DbGovernator
             _logger.Log("*****************************");
             try
             {
-                var NDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
+                var NDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider, _transactionVisitors);
                 var NDataSource = NDataSourceFactory.Create();
                 using (var con = await NDataSource.OpenConnectionAsync())
                 using (var trs = await con.BeginTransactionAsync())
@@ -69,7 +70,7 @@ namespace DbGovernator
             _logger.Log("*****************************");
             //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
             //var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
-            var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
+            var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider, _transactionVisitors);
             //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
             //var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
             var NDataSource = NDDataSourceFactory.Create();
@@ -157,11 +158,12 @@ namespace DbGovernator
         }
 
 
-        public TestTransaction(IConnectionStringProvider connectionStringProvider, IEnumerable<IVisitor> visitors, ILogger logger) 
+        public TestTransaction(IConnectionStringProvider connectionStringProvider, IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors) 
         { 
             _connectionStringProvider = connectionStringProvider;
             _visitors = visitors;
             _logger = logger;
+            _transactionVisitors = transactionVisitors;
         }
     }
 }

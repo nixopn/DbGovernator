@@ -16,10 +16,11 @@ namespace DbGovernator
         private IEnumerable<IVisitor> _visitors;
         private ILogger _logger;
         IEnumerable<ITransactionVisitor> _transactionVisitors;
-        public NDbConnectionFactory(IEnumerable<IVisitor> visitors, ILogger logger) 
+        public NDbConnectionFactory(IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors) 
         {
             _visitors = visitors;
             _logger = logger;
+            _transactionVisitors = transactionVisitors;
         }
         public DbConnection CreateConnection()
         {

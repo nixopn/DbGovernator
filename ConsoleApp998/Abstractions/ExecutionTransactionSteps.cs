@@ -8,8 +8,8 @@ namespace DbGovernator.Abstractions
 {
     public abstract class ExecutionTransactionSteps
     {
-        public ExecutionContext Context { get; set; } = new ExecutionContext();
-        public abstract void AcceptVisitor(IVisitor visitor, ExecutionContext context);
-        public abstract Task AcceptVisitorAsync(IVisitor visitor, ExecutionContext context);
+        public TransactionContext Context { get; set; } = new TransactionContext();
+        public abstract void AcceptVisitor(ITransactionVisitor visitor, TransactionContext context);
+        public abstract Task AcceptVisitorAsync(ITransactionVisitor visitor, TransactionContext context);
     }
 }

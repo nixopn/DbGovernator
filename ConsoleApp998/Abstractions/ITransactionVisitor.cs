@@ -12,15 +12,13 @@ namespace DbGovernator.Abstractions
         public bool hadException { get; set; }
         public ILogger Logger { get; set; }
 
-        public void VisitPreparing(PrepareCommand step);
-        public async Task VisitPreparingAsync(PrepareCommand step) { }
-        public void VisitBeforeExecution(BeforeExecute step);
-        public async Task VisitBeforeExecutionAsync(BeforeExecute step) { }
-        public void VisitExecution(ExecutionSt step);
-        public async Task VisitExecutionAsync(ExecutionSt step) { }
-        public void VisitAfterExecution(AfterExecution step);
-        public async Task VisitAfterExecutionAsync(AfterExecution step) { }
-        public void VisitResultProcessing(ResultProcessing step);
-        public async Task VisitResultProcessingAsync(ResultProcessing step) { }
+
+        public void VisitBegin(BeginTransactionStep step);
+        public async Task VisitBeginAsync(BeginTransactionStep step) { }
+        public void VisitCommit(CommitTransactionStep step);
+        public async Task VisitCommitAsync(CommitTransactionStep step) { }
+        public void VisitRollback(RollbackTransactionStep step);
+        public async Task VisitRollbackAsync(RollbackTransactionStep step) { }
+        
     }
 }
