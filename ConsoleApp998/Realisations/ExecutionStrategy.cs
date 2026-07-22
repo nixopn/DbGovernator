@@ -1,4 +1,5 @@
 ﻿using DbGovernator.Abstractions;
+using LinqToDB;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
@@ -89,6 +90,7 @@ namespace DbGovernator.Realisations
                     Logger.Log($"Retrying {i} time");
                     if (i == _maxRetries)
                     {
+                        Logger.LogError(ex.Message);
                         throw new Exception("Service is temporary unavailable", ex);
                     }
                 }
@@ -146,6 +148,7 @@ namespace DbGovernator.Realisations
                     Logger.Log($"Retrying {i} time");
                     if (i == _maxRetries)
                     {
+                        Logger.LogError(ex.Message);
                         throw new Exception("Service is temporary unavailable", ex);
                     }
                 }
@@ -166,7 +169,7 @@ namespace DbGovernator.Realisations
             {
                 return false;
             }
-            if(ex is DbException)
+            if(ex is DbException || ex is LinqToDBException)
             {
                 return true;
             }

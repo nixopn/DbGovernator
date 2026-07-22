@@ -25,6 +25,9 @@ namespace DbGovernator.Realisations
 
         public void LogError(string Message)
         {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Error: {Message}");
+            Console.ResetColor();
         }
     }
 }

@@ -94,11 +94,19 @@ namespace app
 
 
                 var db = serviceProvider.GetRequiredService<NDbDataConnection>();
-                var selected = db.users.Where(u => u.id == 200);
-                foreach(var u in selected)
+                var selected = db.users.Where(u => u.id == 200).ToList();
+
+
+                foreach (var u in selected)
                 {
                     Console.WriteLine($"{u.Name}");
                 }
+
+
+                var deleteusers = await db.users.Where(u => u.id == 997).DeleteAsync();
+                var update = await db.users.Where(u => u.id == 239).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
+                var newUser = new User { Name = "AAALinqToDBUser" };
+                var insertedId = db.Insert(newUser);
 
                 //INDbDataSourceFactory dataSourceFactory222 = serviceProvider.GetService<INDbDataSourceFactory>();
                 //var NdataSource222 = dataSourceFactory222.Create();

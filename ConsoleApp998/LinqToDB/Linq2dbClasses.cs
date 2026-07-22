@@ -10,7 +10,7 @@ namespace DbGovernator.LinqToDB
     [Table(Name = "users")]
     public class User 
     {
-        [Column(IsPrimaryKey = true)]
+        [Column(IsPrimaryKey = true), Identity]
         public int id { get; set; }
         [Column(Name = "name")]
         public string Name { get; set; }
@@ -20,7 +20,7 @@ namespace DbGovernator.LinqToDB
     [Table(Name = "accounts")]
     public class Account 
     {
-        [Column(IsPrimaryKey = true)]
+        [Column(IsPrimaryKey = true), Identity]
         public int id { get; set; }
         [Column(Name = "money")]
         public int Money { get; set; }

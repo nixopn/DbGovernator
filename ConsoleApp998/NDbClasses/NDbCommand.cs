@@ -132,7 +132,7 @@ namespace DbGovernator.NDbClasses
 
 
         // Выполнение шагов для асинхронных методов
-        private async Task<T> ExecuteStepsAsync<T>(Func<Task<T>> executeFunc, ExecutionContext executionContext)
+        private async Task<T> ExecuteStepsAsync<T>(Func<Task<T>?> executeFunc, ExecutionContext executionContext)
         {
             executionContext.executionFunction = executeFunc;
             foreach (var step in _executionSteps)

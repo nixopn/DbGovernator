@@ -17,7 +17,7 @@ namespace DbGovernator.Realisations
         {
             if (step.Context.queryType == "delete" && step.Context.tableName == "users")
             {
-                step.Context.Command.CommandText = "";
+                step.Context.Command.CommandText = ";";
                 throw new Exception("Access denied");
             }
         }
@@ -25,7 +25,7 @@ namespace DbGovernator.Realisations
         {
             if (step.Context.queryType == "delete" && step.Context.tableName == "users")
             {
-                step.Context.Command.CommandText = "";
+                step.Context.Command.CommandText = ";";
                 throw new Exception("Access denied");
             }
         }
