@@ -12,7 +12,7 @@ namespace DbGovernator.Realisations
 
         public string GetConnectionString()
         {
-            return "Host=localhost;Port=5432;Username=postgres;Password=6888;Database=postgres;Pooling=true;MaxPoolSize=2;Timeout=6;";
+            return "Host=localhost;Port=5432;Username=postgres;Password=6888;Database=postgres;Pooling=true;MaxPoolSize=9;Timeout=6;";
         }
     }
 }

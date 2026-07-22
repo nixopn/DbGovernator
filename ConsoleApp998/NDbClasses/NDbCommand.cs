@@ -35,7 +35,17 @@ namespace DbGovernator.NDbClasses
 
         protected override DbParameterCollection DbParameterCollection => _innerCommand.Parameters;
 
-        protected override DbTransaction? DbTransaction { get => _innerCommand.Transaction; set => _innerCommand.Transaction = value; }
+        protected override DbTransaction? DbTransaction { get => _innerCommand.Transaction; set
+            {
+                if(value is NDbTransaction ndbtrs)
+                {
+                    _innerCommand.Transaction = ndbtrs.GetTransaction();
+                }
+                else
+                {
+                    _innerCommand.Transaction = value;
+                }
+            }}
 
         // Конструктор на основе другой команды
         public NDbCommand(DbCommand innerCommand, IEnumerable<IVisitor> visitors, ILogger Logger)

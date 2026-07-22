@@ -42,19 +42,25 @@ namespace app
                 var testInsert = serviceProvider.GetService<TestInsert>();
                 testInsert.SetupCommand("INSERT INTO users(name) VALUES ('aaaaaaaa');");
                 await testInsert.InsertQ();
+                await testInsert.InsertLinqToDB();
                 var testSelect = serviceProvider.GetRequiredService<TestSelect>();
                 testSelect.SetupCommand("SELECT * from users;");
                 await testSelect.SelectQ();
+                testSelect.SelectLinqToDB();
                 var testUpdate = serviceProvider.GetService<TestUpdate>();
                 testUpdate.SetupCommand("UPDATE accounts SET money = money + 300 WHERE user_id = 3;");
                 await testUpdate.UpdateQ();
+                //await testUpdate.UpdateLinqToDB();
                 var testDelete = serviceProvider.GetService<TestDelete>();
                 testDelete.SetupCommand("DELETE from users where id = 27");
                 await testDelete.DeleteQ();
+                await testDelete.DeleteLinqToDB();
                 var testTransaction = serviceProvider.GetRequiredService<TestTransaction>();
                 testTransaction.SetupCommands("UPDATE accounts SET money = money + 200 WHERE user_id = 8", "UPDATE accounts SET money = money + 300 WHERE user_id = 9");
                 await testTransaction.TestBasic();
                 await testTransaction.TestConflict();
+                await testTransaction.TestBasicLinqToDB();
+                await testTransaction.TestConflictLinqToDB();
                 INDbDataSourceFactory dataSourceFactory = serviceProvider.GetService<INDbDataSourceFactory>();
                 var NdataSource = dataSourceFactory.Create();
                 Console.WriteLine(NdataSource.GetType().Name);
@@ -105,7 +111,7 @@ namespace app
 
 
                 var deleteusers = await db.users.Where(u => u.id == 997).DeleteAsync();
-                var update = await db.users.Where(u => u.id == 289).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
+                //var update = await db.users.Where(u => u.id == 289).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
                 var newUser = new User { Name = "AAALinqToDBUser" };
                 var insertedId = db.Insert(newUser);
 

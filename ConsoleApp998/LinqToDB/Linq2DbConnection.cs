@@ -32,6 +32,7 @@ namespace DbGovernator.LinqToDB
 
 
 
+
         public ITable<User> users { get; set; }
         public ITable<Account> accounts { get; set; }
     }

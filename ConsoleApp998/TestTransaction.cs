@@ -1,7 +1,9 @@
 ﻿using DbGovernator;
 using DbGovernator.Abstractions;
+using DbGovernator.LinqToDB;
 using DbGovernator.NDbClasses;
 using DbGovernator.Realisations;
+using LinqToDB;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -149,6 +151,87 @@ namespace DbGovernator
             _logger.Log("*****************************");
         }
 
+
+        public async Task TestBasicLinqToDB()
+        {
+            _logger.Log("Testing basic transaction LinqToDB");
+            _logger.Log("*****************************");
+            var db = new NDbDataConnection(_visitors, _logger, _transactionVisitors);
+            using (var trs = await db.BeginTransactionAsync())
+            {
+                try
+                {
+                    var update = await db.accounts.Where(u => u.id == 8).Set(u => u.Money, u => u.Money + 200).UpdateAsync();
+                    var update2 = await db.accounts.Where(u => u.id == 9).Set(u => u.Money, u => u.Money + 300).UpdateAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Test failed \n {ex.Message}");
+                    _logger.Log("*****************************");
+                    return;
+                }
+            }
+
+
+            _logger.Log("Test passed");
+            _logger.Log("*****************************");
+        }
+
+
+
+        public async Task TestConflictLinqToDB()
+        {
+            _logger.Log("Testing conflict of transactions LinqToDB");
+            _logger.Log("*****************************");
+            var db = new NDbDataConnection(_visitors, _logger, _transactionVisitors);
+            Task transaction1 = Task.Run(async () =>
+            {
+                            using (var trs = await db.BeginTransactionAsync())
+            {
+                try
+                {
+                    var update = await db.accounts.Where(u => u.id == 8).Set(u => u.Money, u => u.Money + 200).UpdateAsync();
+                    var update2 = await db.accounts.Where(u => u.id == 9).Set(u => u.Money, u => u.Money + 300).UpdateAsync();
+                }
+                catch (Exception ex)
+                {
+                    _logger.Log($"Transaction №1 failed \n {ex.Message}");
+                    _logger.Log("*****************************");
+                    return;
+                }
+            }
+            });
+            Task transaction2 = Task.Run(async () =>
+            {
+                using (var trs = await db.BeginTransactionAsync())
+                {
+                    try
+                    {
+                        var update = await db.accounts.Where(u => u.id == 9).Set(u => u.Money, u => u.Money + 300).UpdateAsync();
+                        var update2 = await db.accounts.Where(u => u.id == 8).Set(u => u.Money, u => u.Money + 200).UpdateAsync();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.Log($"Transaction №2 failed \n {ex.Message}");
+                        _logger.Log("*****************************");
+                        return;
+                    }
+                }
+            });
+            try
+            {
+                await Task.WhenAll(transaction1, transaction2);
+            }
+            catch (Exception ex)
+            {
+                _logger.Log("Test failed");
+                _logger.Log($"Error in some transaction {ex.Message}");
+                _logger.Log("*****************************");
+                return;
+            }
+            _logger.Log("No conflict");
+            _logger.Log("*****************************");
+        }
 
 
         public void SetupCommands(string command1, string command2)

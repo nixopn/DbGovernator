@@ -1,7 +1,9 @@
 ﻿using DbGovernator;
 using DbGovernator.Abstractions;
+using DbGovernator.LinqToDB;
 using DbGovernator.NDbClasses;
 using DbGovernator.Realisations;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -18,6 +20,7 @@ namespace DbGovernator
         private IEnumerable<IVisitor> _visitors;
         private ILogger _logger;
         private IConnectionStringProvider _connectionStringProvider;
+        private IEnumerable<ITransactionVisitor> _transactionVisitors;
         public string command { get; set; }
         public void SetupCommand(string command)
         {
@@ -61,11 +64,24 @@ namespace DbGovernator
             _logger.Log("Test passed");
             _logger.Log("*****************************");
         }
-        public TestSelect(IConnectionStringProvider connectionStringProvider, IEnumerable<IVisitor> visitors, ILogger logger)
+
+        public void SelectLinqToDB()
+        {
+            var db = new NDbDataConnection(_visitors, _logger, _transactionVisitors);
+            var selected = db.users.Where(u => u.id >= 200).ToList();
+
+
+            foreach (var u in selected)
+            {
+                Console.WriteLine($"{u.Name}");
+            }
+        }
+        public TestSelect(IConnectionStringProvider connectionStringProvider, IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors)
         {
             this._connectionStringProvider= connectionStringProvider;
             _visitors = visitors;
             _logger = logger;
+            _transactionVisitors = transactionVisitors;
         }
     }
 }
