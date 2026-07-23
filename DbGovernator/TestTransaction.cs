@@ -35,8 +35,8 @@ namespace DbGovernator
         /// <returns></returns>
         public async Task TestBasic()
         {
-            _logger.Log("Testing basic transaction");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Testing basic transaction");
+            _logger.LogInfo("*****************************");
             try
             {
                 var NDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider, _transactionVisitors);
@@ -60,12 +60,12 @@ namespace DbGovernator
             }
             catch (Exception ex)
             {
-                _logger.Log($"Test failed \n {ex.Message}");
-                _logger.Log("*****************************");
+                _logger.LogInfo($"Test failed \n {ex.Message}");
+                _logger.LogInfo("*****************************");
                 return;
             }
-            _logger.Log("Test passed");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Test passed");
+            _logger.LogInfo("*****************************");
         }
 
         /// <summary>
@@ -74,11 +74,11 @@ namespace DbGovernator
         /// <returns></returns>
         public async Task TestConflict()
         {
-            _logger.Log("Testing conflict of transactions");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Testing conflict of transactions");
+            _logger.LogInfo("*****************************");
             var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider, _transactionVisitors);
             var NDataSource = NDDataSourceFactory.Create();
-            Task transaction1 = Task.Run(async () =>
+            Task transaction1 = Task.Run((Func<Task?>)(async () =>
             {
                 using (var con = await NDataSource.OpenConnectionAsync())
                 using (var transaction = await con.BeginTransactionAsync())
@@ -101,14 +101,14 @@ namespace DbGovernator
                     catch (Exception ex)
                     {
 
-                        _logger.Log($"Transaction 1 {ex.Message}");
+                        _logger.LogInfo($"Transaction 1 {ex.Message}");
                         await transaction.RollbackAsync();
-                        _logger.Log("*****************************");
+                        _logger.LogInfo("*****************************");
                         throw;
                     }
                 }
-            });
-            Task transaction2 = Task.Run(async () =>
+            }));
+            Task transaction2 = Task.Run((Func<Task?>)(async () =>
             {
                 await using (var con = await NDataSource.OpenConnectionAsync())
                 await using (var transaction = await con.BeginTransactionAsync())
@@ -131,26 +131,26 @@ namespace DbGovernator
                     catch (Exception ex)
                     {
 
-                        _logger.Log($"Transaction 2 {ex.Message}");
+                        _logger.LogInfo($"Transaction 2 {ex.Message}");
                         await transaction.RollbackAsync();
-                        _logger.Log("*****************************");
+                        _logger.LogInfo("*****************************");
                         throw;
                     }
                 }
-            });
+            }));
             try
             {
                 await Task.WhenAll(transaction1, transaction2);
             }
             catch (Exception ex)
             {
-                _logger.Log("Test failed");
-                _logger.Log($"Error in some transaction {ex.Message}");
-                _logger.Log("*****************************");
+                _logger.LogInfo("Test failed");
+                _logger.LogInfo($"Error in some transaction {ex.Message}");
+                _logger.LogInfo("*****************************");
                 return;
             }
-            _logger.Log("No conflict");
-            _logger.Log("*****************************");
+            _logger.LogInfo("No conflict");
+            _logger.LogInfo("*****************************");
         }
 
         /// <summary>
@@ -159,8 +159,8 @@ namespace DbGovernator
         /// <returns></returns>
         public async Task TestBasicLinqToDB()
         {
-            _logger.Log("Testing basic transaction LinqToDB");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Testing basic transaction LinqToDB");
+            _logger.LogInfo("*****************************");
             var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
             var db = dbc.CreateConnection();
             using (var trs = await db.BeginTransactionAsync())
@@ -172,15 +172,15 @@ namespace DbGovernator
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log($"Test failed \n {ex.Message}");
-                    _logger.Log("*****************************");
+                    _logger.LogInfo($"Test failed \n {ex.Message}");
+                    _logger.LogInfo("*****************************");
                     return;
                 }
             }
 
 
-            _logger.Log("Test passed");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Test passed");
+            _logger.LogInfo("*****************************");
         }
 
         /// <summary>
@@ -189,11 +189,11 @@ namespace DbGovernator
         /// <returns></returns>
         public async Task TestConflictLinqToDB()
         {
-            _logger.Log("Testing conflict of transactions LinqToDB");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Testing conflict of transactions LinqToDB");
+            _logger.LogInfo("*****************************");
             var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
             var db = dbc.CreateConnection();
-            Task transaction1 = Task.Run(async () =>
+            Task transaction1 = Task.Run((Func<Task?>)(async () =>
             {
                             using (var trs = await db.BeginTransactionAsync())
             {
@@ -204,13 +204,13 @@ namespace DbGovernator
                 }
                 catch (Exception ex)
                 {
-                    _logger.Log($"Transaction №1 failed \n {ex.Message}");
-                    _logger.Log("*****************************");
+                        _logger.LogInfo($"Transaction №1 failed \n {ex.Message}");
+                        _logger.LogInfo("*****************************");
                     return;
                 }
             }
-            });
-            Task transaction2 = Task.Run(async () =>
+            }));
+            Task transaction2 = Task.Run((Func<Task?>)(async () =>
             {
                 using (var trs = await db.BeginTransactionAsync())
                 {
@@ -221,25 +221,25 @@ namespace DbGovernator
                     }
                     catch (Exception ex)
                     {
-                        _logger.Log($"Transaction №2 failed \n {ex.Message}");
-                        _logger.Log("*****************************");
+                        _logger.LogInfo($"Transaction №2 failed \n {ex.Message}");
+                        _logger.LogInfo("*****************************");
                         return;
                     }
                 }
-            });
+            }));
             try
             {
                 await Task.WhenAll(transaction1, transaction2);
             }
             catch (Exception ex)
             {
-                _logger.Log("Test failed");
-                _logger.Log($"Error in some transaction {ex.Message}");
-                _logger.Log("*****************************");
+                _logger.LogInfo("Test failed");
+                _logger.LogInfo($"Error in some transaction {ex.Message}");
+                _logger.LogInfo("*****************************");
                 return;
             }
-            _logger.Log("No conflict");
-            _logger.Log("*****************************");
+            _logger.LogInfo("No conflict");
+            _logger.LogInfo("*****************************");
         }
 
         /// <summary>

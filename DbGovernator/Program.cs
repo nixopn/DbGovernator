@@ -1,8 +1,4 @@
-﻿using DbGovernator;
-using DbGovernator.Abstractions;
-using DbGovernator.Realisations;
-using DbGovernator.NDbClasses;
-using Microsoft.Extensions.DependencyInjection;
+﻿using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using System;
 using System.Data;
@@ -11,7 +7,14 @@ using System.Reflection;
 using LinqToDB;
 using System.Linq;
 using System.Data.Entity;
+using Dapper;
+
+using DbGovernator;
+using DbGovernator.Abstractions;
+using DbGovernator.Realisations;
+using DbGovernator.NDbClasses;
 using DbGovernator.LinqToDB;
+
 
 
 namespace app
@@ -40,6 +43,18 @@ namespace app
             services.AddSingleton<ITransactionVisitor, TransactionMetrics>();
             using (var serviceProvider = services.BuildServiceProvider())
             {
+                INDbDataSourceFactory dataSourceFactory222 = serviceProvider.GetService<INDbDataSourceFactory>();
+                var NdataSource222 = dataSourceFactory222.Create();
+                var ndbcon222 = NdataSource222.OpenConnection();
+                var count = ndbcon222.Execute(@"insert into accounts(money, user_id) values (@a, @b)",
+                new[] { 
+                    new { a = 229, b = 298 }, 
+                    new { a = 2222222, b = 239 }, 
+                    new { a = 2222222, b = 998 } 
+                    }
+                );
+
+
                 var testInsert = serviceProvider.GetService<TestInsert>();
                 testInsert.SetupCommand("INSERT INTO users(name) VALUES ('aaaaaaaa');");
                 await testInsert.InsertQ();

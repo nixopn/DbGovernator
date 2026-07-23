@@ -15,7 +15,7 @@ namespace DbGovernator.Realisations
     {
         public string Message { get; set; }
 
-        public void Log(string Message)
+        public void LogInfo(string Message)
         {
             Console.WriteLine(Message);
         }
@@ -31,9 +31,6 @@ namespace DbGovernator.Realisations
             Console.ResetColor();
         }
 
-        public void LogInfo(string Message)
-        {
-        }
 
         public void LogDebug(string Message)
         {

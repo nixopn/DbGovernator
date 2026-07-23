@@ -36,11 +36,11 @@ namespace DbGovernator
         /// <returns></returns>
         public async Task SelectQ()
         {
-            _logger.Log("Testing select query");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Testing select query");
+            _logger.LogInfo("*****************************");
             if (!Command.ToLower().Contains("select"))
             {
-                _logger.Log("Invlaid command");
+                _logger.LogInfo("Invlaid command");
                 return;
             }
             try
@@ -56,20 +56,20 @@ namespace DbGovernator
                 {
                     while (await reader.ReadAsync())
                     {
-                        _logger.Log($"{reader.GetInt32(0)} {reader.GetString(1)}");
+                        _logger.LogInfo($"{reader.GetInt32(0)} {reader.GetString(1)}");
 
                     }
                 }
             }
             catch (Exception ex)
             {
-                _logger.Log("Test failed");
-                _logger.Log(ex.Message);
-                _logger.Log("*****************************");
+                _logger.LogInfo("Test failed");
+                _logger.LogInfo(ex.Message);
+                _logger.LogInfo("*****************************");
                 return;
             }
-            _logger.Log("Test passed");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Test passed");
+            _logger.LogInfo("*****************************");
         }
 
         /// <summary>

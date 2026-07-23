@@ -12,7 +12,6 @@ namespace DbGovernator.Realisations
     /// </summary>
     public class AccessChecker : IVisitor
     {
-        public bool HadException { get; set; }
         public ILogger Logger { get; set; }
 
         /// <summary>

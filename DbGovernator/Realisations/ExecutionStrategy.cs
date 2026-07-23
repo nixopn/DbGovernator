@@ -16,7 +16,6 @@ namespace DbGovernator.Realisations
     /// </summary>
     public class ExecutionStrategy : IVisitor
     {
-        public bool HadException { get; set; }
         public ILogger Logger { get; set; }
 
         private int _maxRetries = 9; // Максимальное количество попыток повтора в случае провала запроса
@@ -25,13 +24,11 @@ namespace DbGovernator.Realisations
 
         public ExecutionStrategy()
         {
-            HadException = false;
         }
 
 
         public void Reset()
         {
-            HadException = false;
         }
         /// <summary>
         /// Ставит количество попыток.
@@ -95,7 +92,7 @@ namespace DbGovernator.Realisations
                     }
                     // Console.WriteLine(ex.Message);
                     Thread.Sleep(_retryDelayMs);
-                    Logger.Log($"Retrying {i} time");
+                    Logger.LogInfo($"Retrying {i} time");
                     if (i == _maxRetries)
                     {
                         Logger.LogError(ex.Message);
@@ -159,7 +156,7 @@ namespace DbGovernator.Realisations
                     // Console.WriteLine(ex.Message);
                     //Thread.Sleep(_retryDelayMs);
                     await Task.Delay(_retryDelayMs);
-                    Logger.Log($"Retrying {i} time");
+                    Logger.LogInfo($"Retrying {i} time");
                     if (i == _maxRetries)
                     {
                         Logger.LogError(ex.Message);

@@ -12,7 +12,6 @@ namespace DbGovernator.Abstractions
     /// </summary>
     public interface ITransactionVisitor
     {
-        public bool HadException { get; set; }
         public ILogger Logger { get; set; }
 
 

@@ -36,11 +36,11 @@ namespace DbGovernator
         /// <returns></returns>
         public async Task InsertQ()
         {
-            _logger.Log("Testing insert query");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Testing insert query");
+            _logger.LogInfo("*****************************");
             if(!command.ToLower().Contains("insert"))
             {
-                _logger.Log("Invalid command");
+                _logger.LogInfo("Invalid command");
                 return;
             }
             try
@@ -56,12 +56,12 @@ namespace DbGovernator
             }
             catch (Exception ex)
             {
-                _logger.Log("Test failed");
-                _logger.Log(ex.Message);
-                _logger.Log("*****************************");
+                _logger.LogInfo("Test failed");
+                _logger.LogInfo(ex.Message);
+                _logger.LogInfo("*****************************");
             }
-            _logger.Log("Test passed");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Test passed");
+            _logger.LogInfo("*****************************");
         }
 
         /// <summary>

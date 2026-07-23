@@ -13,7 +13,6 @@ namespace DbGovernator.Realisations
     /// </summary>
     public class Audit : IVisitor
     {
-        public bool HadException { get; set; }
         public ILogger Logger { get; set; }
 
 
@@ -70,8 +69,8 @@ namespace DbGovernator.Realisations
             step.Context.tableName = match.Groups[2].Value;
 
 
-            Logger.Log($"Query type: {step.Context.queryType}");
-            Logger.Log($"Table name: {step.Context.tableName}");
+            Logger.LogInfo($"Query type: {step.Context.queryType}");
+            Logger.LogInfo($"Table name: {step.Context.tableName}");
         }
 
         /// <summary>
@@ -109,8 +108,8 @@ namespace DbGovernator.Realisations
             step.Context.tableName = match.Groups[2].Value;
 
 
-            Logger.Log($"Query type: {step.Context.queryType}");
-            Logger.Log($"Table name: {step.Context.tableName}");
+            Logger.LogInfo($"Query type: {step.Context.queryType}");
+            Logger.LogInfo($"Table name: {step.Context.tableName}");
         }
     }
 

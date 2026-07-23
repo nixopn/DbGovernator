@@ -25,7 +25,7 @@ namespace DbGovernator.NDbClasses
         /// <summary>
         /// Списки шагов выполнения, задаются в конструкторе.
         /// </summary>
-        private List<ExecutionStep> _executionSteps;
+        private List<ExecutionCommandStep> _executionSteps;
         /// <summary>
         /// Список посетителей, получается через DI.
         /// </summary>
@@ -64,7 +64,7 @@ namespace DbGovernator.NDbClasses
         /// </summary>
         public NDbCommand(DbCommand innerCommand, IEnumerable<IVisitor> visitors, ILogger Logger)
         {
-            _executionSteps = new List<ExecutionStep>
+            _executionSteps = new List<ExecutionCommandStep>
             {
                 new PrepareCommand(),
                 new BeforeExecute(),
@@ -89,7 +89,7 @@ namespace DbGovernator.NDbClasses
         /// </summary>
         public NDbCommand(DbCommand innerCommand, DbConnection connection, IEnumerable<IVisitor> visitors, ILogger Logger, DbTransaction? transaction = null)
         {
-            _executionSteps = new List<ExecutionStep>
+            _executionSteps = new List<ExecutionCommandStep>
             {
                 new PrepareCommand(),
                 new BeforeExecute(),
@@ -135,12 +135,17 @@ namespace DbGovernator.NDbClasses
         private async Task<T> ExecuteStepsAsync<T>(Func<Task<T>?> executeFunc, ExecutionContext executionContext)
         {
             executionContext.executionFunction = executeFunc;
+            foreach(var visitor in _visitors)
+            {
+                executionContext.HadError[visitor] = false;
+            }
+
             foreach (var step in _executionSteps)
             {
                 foreach (var visitor in _visitors)
                 {
                     /// Если посетитель уже ошибался на более ранних шагах, то его выполнение пропускается.
-                    if (visitor.HadException)
+                    if (executionContext.HadError[visitor])
                     {
                         continue;
                     }
@@ -150,17 +155,13 @@ namespace DbGovernator.NDbClasses
                     }
                     catch (Exception ex)
                     {
-                        visitor.HadException = true;
-                        _logger.Log(ex.Message);
+                        executionContext.HadError[visitor] = true;
+                        _logger.LogInfo(ex.Message);
                     }
                 }
             }
             if (executionContext.Result == null)
             {
-                foreach (var visitor in _visitors)
-                {
-                    visitor.HadException = false;
-                }
                 throw new Exception("Command execution failed, result is null");
             }
             return (T)executionContext.Result;
@@ -178,11 +179,16 @@ namespace DbGovernator.NDbClasses
         private T ExecuteSteps<T>(Func<object?> executeFunc, ExecutionContext executionContext)
         {
             executionContext.executionFunction = executeFunc;
+            foreach (var visitor in _visitors)
+            {
+                executionContext.HadError[visitor] = false;
+            }
+
             foreach (var step in _executionSteps)
             {
                 foreach (var visitor in _visitors)
                 {
-                    if (visitor.HadException)
+                    if (executionContext.HadError[visitor])
                     {
                         continue;
                     }
@@ -192,17 +198,13 @@ namespace DbGovernator.NDbClasses
                     }
                     catch (Exception ex)
                     {
-                        visitor.HadException = true;
-                        _logger.Log(ex.Message);
+                        executionContext.HadError[visitor] = true;
+                        _logger.LogInfo(ex.Message);
                     }
                 }
             }
             if (executionContext.Result == null)
             {
-                foreach (var visitor in _visitors)
-                {
-                    visitor.HadException = false;
-                }
                 throw new Exception("Command execution failed, result is null");
             }
             return (T)executionContext.Result;

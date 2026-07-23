@@ -19,7 +19,7 @@ namespace DbGovernator.Abstractions
     /// Посетителя, выполняющего свои функции на этом этапе.
     /// Контекст исполнения, принимаемый посетителем.
     /// </summary>
-    public abstract class ExecutionStep
+    public abstract class ExecutionCommandStep
     {
         public ExecutionContext Context { get; set; } = new ExecutionContext();
         public abstract void AcceptVisitor(IVisitor visitor, ExecutionContext context);

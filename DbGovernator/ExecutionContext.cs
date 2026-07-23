@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbGovernator.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
@@ -56,5 +57,7 @@ namespace DbGovernator
         /// Делегат для передачи функции исполняющей запрос.
         /// </summary>
         public Func<object?> executionFunction { get; set; }
+
+        public Dictionary<IVisitor, bool> HadError { get; set; } = new();
     }
 }

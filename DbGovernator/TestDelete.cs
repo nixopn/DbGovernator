@@ -36,11 +36,11 @@ namespace DbGovernator
         /// <returns></returns>
         public async Task DeleteQ()
         {
-            _logger.Log("Testing delete query");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Testing delete query");
+            _logger.LogInfo("*****************************");
             if (!command.ToLower().Contains("delete"))
             {
-                _logger.Log("Invalid command");
+                _logger.LogInfo("Invalid command");
                 return;
             }
             try
@@ -54,13 +54,13 @@ namespace DbGovernator
             }
             catch (Exception ex)
             {
-                _logger.Log("Test failed");
-                _logger.Log(ex.Message);
-                _logger.Log("*****************************");
+                _logger.LogInfo("Test failed");
+                _logger.LogInfo(ex.Message);
+                _logger.LogInfo("*****************************");
                 return;
             }
-            _logger.Log("Test passed");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Test passed");
+            _logger.LogInfo("*****************************");
         }
 
         /// <summary>
@@ -70,7 +70,7 @@ namespace DbGovernator
         {
             var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
             var db = dbc.CreateConnection();
-            var deleteusers = await db.GetTable<User>().Where(u => u.id == 997).DeleteAsync();
+            var deleteusers = await db.GetTable<User>().Where(u => u.id == 986).DeleteAsync();
         }
         public TestDelete(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider, IEnumerable<ITransactionVisitor> transactionVisitors)
         {

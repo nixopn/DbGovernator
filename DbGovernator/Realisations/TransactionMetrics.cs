@@ -12,7 +12,6 @@ namespace DbGovernator.Realisations
     /// </summary>
     public class TransactionMetrics : ITransactionVisitor
     {
-        public bool HadException {  get; set; }
         public ILogger Logger { get; set; }
 
         /// <summary>
@@ -31,8 +30,8 @@ namespace DbGovernator.Realisations
         {
             step.Context.After = DateTime.UtcNow;
             step.Context.Success = true;
-            Logger.Log($"Duration {step.Context.Duration.TotalMilliseconds}");
-            Logger.Log($"Success {step.Context.Success}");
+            Logger.LogInfo($"Duration {step.Context.Duration.TotalMilliseconds}");
+            Logger.LogInfo($"Success {step.Context.Success}");
         }
 
         /// <summary>
@@ -43,8 +42,8 @@ namespace DbGovernator.Realisations
         {
             step.Context.After = DateTime.UtcNow;
             step.Context.Success = false;
-            Logger.Log($"Duration {step.Context.Duration.TotalMilliseconds}");
-            Logger.Log($"Success {step.Context.Success}");
+            Logger.LogInfo($"Duration {step.Context.Duration.TotalMilliseconds}");
+            Logger.LogInfo($"Success {step.Context.Success}");
         }
     }
 }

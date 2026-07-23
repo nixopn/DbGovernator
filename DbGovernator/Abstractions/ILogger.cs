@@ -14,10 +14,9 @@ namespace DbGovernator.Abstractions
     {
         public string Message { get; set; }
 
-        void Log(string Message);
+        void LogInfo(string Message);
         void LogWarning(string Message);
         void LogError(string Message);
-        void LogInfo(string Message);
         void LogDebug(string Message);
     }
 }

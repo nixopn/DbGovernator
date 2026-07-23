@@ -15,7 +15,6 @@ namespace DbGovernator.Realisations
     /// </summary>
     public class Metrics : IVisitor
     {
-        public bool HadException { get; set; }
         public ILogger Logger { get; set; }
 
         /// <summary>
@@ -24,8 +23,8 @@ namespace DbGovernator.Realisations
         /// <param name="step"></param>
         public void VisitResultProcessing(ResultProcessing step)
         {
-            Logger.Log($"Duration: {step.Context.Duration.TotalMilliseconds}");
-            Logger.Log($"Rows Affected: {step.Context.affectedRows}");
+            Logger.LogInfo($"Duration: {step.Context.Duration.TotalMilliseconds}");
+            Logger.LogInfo($"Rows Affected: {step.Context.affectedRows}");
         }
 
         /// <summary>
@@ -34,8 +33,8 @@ namespace DbGovernator.Realisations
         /// <param name="step"></param>
         public async Task VisitResultProcessingAsync(ResultProcessing step)
         {
-            Logger.Log($"Duration: {step.Context.Duration.TotalMilliseconds}");
-            Logger.Log($"Rows Affected: {step.Context.affectedRows}");
+            Logger.LogInfo($"Duration: {step.Context.Duration.TotalMilliseconds}");
+            Logger.LogInfo($"Rows Affected: {step.Context.affectedRows}");
         }
 
         /// <summary>
@@ -83,7 +82,7 @@ namespace DbGovernator.Realisations
         /// <param name="step"></param>
         public void VisitPreparing(PrepareCommand step)
         {
-            Logger.Log($"SQL: {step.Context.Command.CommandText}");
+            Logger.LogInfo($"SQL: {step.Context.Command.CommandText}");
         }
 
         /// <summary>
@@ -92,7 +91,7 @@ namespace DbGovernator.Realisations
         /// <param name="step"></param>
         public async Task VisitPreparingAsync(PrepareCommand step)
         { 
-            Logger.Log($"SQL: {step.Context.Command.CommandText}");
+            Logger.LogInfo($"SQL: {step.Context.Command.CommandText}");
         }
     }
 }

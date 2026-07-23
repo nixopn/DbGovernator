@@ -11,7 +11,7 @@ namespace DbGovernator.Realisations
     /// Класс, реализующий абстрактный класс ExecutionStep шага выполнения команды.
     /// Шаг до выполнения команды.
     /// </summary>
-    public class BeforeExecute : ExecutionStep
+    public class BeforeExecute : ExecutionCommandStep
     {
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {
@@ -29,7 +29,7 @@ namespace DbGovernator.Realisations
     /// Класс, реализующий абстрактный класс ExecutionStep шага выполнения команды.
     /// Шаг подготовки команды.
     /// </summary>
-    public class PrepareCommand : ExecutionStep
+    public class PrepareCommand : ExecutionCommandStep
     {
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {
@@ -48,7 +48,7 @@ namespace DbGovernator.Realisations
     /// Класс, реализующий абстрактный класс ExecutionStep шага выполнения команды.
     /// Шаг после выполнения команды.
     /// </summary>
-    public class AfterExecution : ExecutionStep
+    public class AfterExecution : ExecutionCommandStep
     {
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {
@@ -67,7 +67,7 @@ namespace DbGovernator.Realisations
     /// Класс, реализующий абстрактный класс ExecutionStep шага выполнения команды.
     /// Шаг обработки результата.
     /// </summary>
-    public class ResultProcessing : ExecutionStep
+    public class ResultProcessing : ExecutionCommandStep
     {
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {
@@ -86,7 +86,7 @@ namespace DbGovernator.Realisations
     /// Класс, реализующий абстрактный класс ExecutionStep шага выполнения команды.
     /// Шаг выполнения команды.
     /// </summary>
-    public class ExecutionSt : ExecutionStep
+    public class ExecutionSt : ExecutionCommandStep
     {
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {

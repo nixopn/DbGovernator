@@ -33,16 +33,24 @@ namespace DbGovernator.NDbClasses
         /// <param name="logger">Логгер. Получается от соединения.</param>
         public NDbTransaction(DbTransaction innerTransaction, IEnumerable<ITransactionVisitor> visitors, ILogger logger)
         {
+            _logger = logger;
             BeginTransactionStep step = new BeginTransactionStep();
             foreach (var visitor in visitors)
             {
-                visitor.Logger = logger;
-                visitor.VisitBegin(step);
+                try
+                {
+                    visitor.Logger = logger;
+                    visitor.VisitBegin(step);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Exception at BeginTransactionStep \n {ex.Message}");
+                }
             }
-            _transactionContext = step.Context;
             _innerTransaction = innerTransaction;
             _transactionVisitors = visitors;
-            _logger = logger;
+            _logger.LogInfo("Begin step executed successfuly");
+            _transactionContext = step.Context;
         }
 
         /// <summary>
@@ -54,9 +62,17 @@ namespace DbGovernator.NDbClasses
             CommitTransactionStep step = new CommitTransactionStep();
             foreach (var visitor in _transactionVisitors)
             {
-                visitor.VisitCommit(step);
+                try
+                {
+                    visitor.VisitCommit(step);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Exception at CommitStep \n {ex.Message}");
+                }
             }
             _innerTransaction.Commit();
+            _logger.LogInfo("Commit step executed successfuly");
         }
 
         public void Dispose()
@@ -73,9 +89,17 @@ namespace DbGovernator.NDbClasses
             RollbackTransactionStep step = new RollbackTransactionStep();
             foreach (var visitor in _transactionVisitors)
             {
-                visitor.VisitRollback(step);
+                try
+                {
+                    visitor.VisitRollback(step);
+                }
+                catch(Exception ex)
+                {
+                    _logger.LogError($"Exception at RollbackStep \n {ex}");
+                }
             }
             _innerTransaction?.Rollback();
+            _logger.LogInfo("Rollback step executed successfuly");
         }
 
         /// <summary>
@@ -87,9 +111,17 @@ namespace DbGovernator.NDbClasses
             CommitTransactionStep step = new CommitTransactionStep();
             foreach (var visitor in _transactionVisitors)
             {
-                await visitor.VisitCommitAsync(step);
+                try
+                {
+                    await visitor.VisitCommitAsync(step);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Exception at CommitStepAsync \n {ex.Message}");
+                }
             }
             await _innerTransaction.CommitAsync();
+            _logger.LogInfo("Commit step executed successfuly");
         }
 
         public async Task DisposeAsync()
@@ -106,9 +138,17 @@ namespace DbGovernator.NDbClasses
             RollbackTransactionStep step = new RollbackTransactionStep();
             foreach (var visitor in _transactionVisitors)
             {
-                await visitor.VisitRollbackAsync(step);
+                try
+                {
+                    await visitor.VisitRollbackAsync(step);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError($"Exception at RollbackStepAsync \n {ex}");
+                }
             }
             await _innerTransaction.RollbackAsync();
+            _logger.LogInfo("Rollback step executed successfuly");
         }
 
 

@@ -10,7 +10,7 @@ namespace DbGovernator.Realisations
     /// <summary>
     /// Шаг начала транзакции. Вызывается в конструкторе транзакции.
     /// </summary>
-    public class BeginTransactionStep : ExecutionTransactionSteps
+    public class BeginTransactionStep : ExecutionTransactionStep
     {
         public override void AcceptVisitor(ITransactionVisitor visitor, TransactionContext context)
         {
@@ -26,7 +26,7 @@ namespace DbGovernator.Realisations
     /// <summary>
     /// Шаг сохранения изменений транзакции.
     /// </summary>
-    public class CommitTransactionStep : ExecutionTransactionSteps
+    public class CommitTransactionStep : ExecutionTransactionStep
     {
         public override void AcceptVisitor(ITransactionVisitor visitor, TransactionContext context)
         {
@@ -42,7 +42,7 @@ namespace DbGovernator.Realisations
     /// <summary>
     /// Шаг отмены изменений транзакции.
     /// </summary>
-    public class RollbackTransactionStep : ExecutionTransactionSteps
+    public class RollbackTransactionStep : ExecutionTransactionStep
     {
         public override void AcceptVisitor(ITransactionVisitor visitor, TransactionContext context)
         {

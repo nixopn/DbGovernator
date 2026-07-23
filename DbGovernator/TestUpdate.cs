@@ -36,11 +36,11 @@ namespace DbGovernator
         /// <returns></returns>
         public async Task UpdateQ()
         {
-            _logger.Log("Testing update query");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Testing update query");
+            _logger.LogInfo("*****************************");
             if (!command.ToLower().Contains("update"))
             {
-                _logger.Log("Invalid command");
+                _logger.LogInfo("Invalid command");
                 return;
             }
             try
@@ -58,13 +58,13 @@ namespace DbGovernator
             }
             catch (Exception ex)
             {
-                _logger.Log("Test failed");
-                _logger.Log(ex.Message);
-                _logger.Log("*****************************");
+                _logger.LogInfo("Test failed");
+                _logger.LogInfo(ex.Message);
+                _logger.LogInfo("*****************************");
                 return;
             }
-            _logger.Log("Test passed");
-            _logger.Log("*****************************");
+            _logger.LogInfo("Test passed");
+            _logger.LogInfo("*****************************");
         }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace DbGovernator
         {
             var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
             var db = dbc.CreateConnection();
-            var update = await db.GetTable<User>().Where(u => u.id == 298).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
+            var update = await db.GetTable<User>().Where(u => u.id == 299).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
         }
         public TestUpdate(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider, IEnumerable<ITransactionVisitor> transactionVisitors)
         {
