@@ -17,6 +17,9 @@ using LinqToDB.DataProvider.PostgreSQL;
 
 namespace DbGovernator.LinqToDB
 {
+    /// <summary>
+    /// Класс-наследник DataConnection, реализующий взаимодействие NDb-классов с LinqToDB.
+    /// </summary>
     public class  NDbDataConnection : DataConnection
     {
         public NDbDataConnection(IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors)
@@ -27,10 +30,6 @@ namespace DbGovernator.LinqToDB
             users = this.GetTable<User>();
             accounts = this.GetTable<Account>();
         }
-
-
-
-
 
 
         public ITable<User> users { get; set; }

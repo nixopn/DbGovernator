@@ -13,8 +13,10 @@ using System.Threading.Tasks;
 
 namespace DbGovernator
 {
-    // Класс для тестирования DbGovernator
-    // Проверяет insert-запросы
+    /// <summary>
+    /// Класс для тестирования DbGovernator.
+    /// Проверяет insert-запросы.
+    /// </summary>
     internal class TestInsert
     {
         private IEnumerable<IVisitor> _visitors;
@@ -27,6 +29,11 @@ namespace DbGovernator
         {
             this.command = command;
         }
+
+        /// <summary>
+        /// Проверяет асинхронный insert с командой из свойства Command.
+        /// </summary>
+        /// <returns></returns>
         public async Task InsertQ()
         {
             _logger.Log("Testing insert query");
@@ -57,6 +64,9 @@ namespace DbGovernator
             _logger.Log("*****************************");
         }
 
+        /// <summary>
+        /// Проверяет insert через LinqToDB.
+        /// </summary>
         public async Task InsertLinqToDB()
         {
             var db = new NDbDataConnection(_visitors, _logger, _transactionVisitors);

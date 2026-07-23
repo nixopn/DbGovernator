@@ -10,7 +10,11 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.NDbClasses
 {
-    // Реализует интерфейс IDbConnection
+    /// <summary>
+    /// Реализует абстрактный класс DbConnection.
+    /// Является обёрткой для различных наследников DbConnection.
+    /// Точно работает с PostgreSql.
+    /// </summary>
     public class NDbConnection : DbConnection
     {
         private DbConnection _innerConnection;
@@ -18,19 +22,32 @@ namespace DbGovernator.NDbClasses
         private ILogger _logger;
         private DbTransaction _trs;
         private IEnumerable<ITransactionVisitor> _transactionVisitors;
+
         public override string ConnectionString { get => _innerConnection.ConnectionString; set => _innerConnection.ConnectionString = value; }
-
         public override int ConnectionTimeout => _innerConnection.ConnectionTimeout;
-
         public override string Database => _innerConnection.Database;
-
         public override ConnectionState State => _innerConnection.State;
-
         public override string DataSource => _innerConnection.DataSource;
-
         public override string ServerVersion => _innerConnection.ServerVersion;
 
-
+        /// <summary>
+        /// Конструктор для класса на основе другого соединения.
+        /// </summary>
+        /// <param name="innerConnection">Оборачиваемое соединение. Любой наследник DbConnection.</param>
+        /// <param name="visitors">
+        /// Список посетителей. 
+        /// Передаётся команде, если мы создаём её через соединение. 
+        /// Получается от источника данных.
+        /// </param>
+        /// <param name="logger">
+        /// Логгер. 
+        /// Получается от источника данных.
+        /// </param>
+        /// <param name="transactionVisitors">
+        /// Список посетителей транзакции.
+        /// Передаётся транзакции в случае её создания через соединение.
+        /// Получается от источника данных.
+        /// </param>
         public NDbConnection(DbConnection innerConnection, IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors)
         {
             _innerConnection = innerConnection;
@@ -90,6 +107,13 @@ namespace DbGovernator.NDbClasses
             _innerConnection.Open();
         }
 
+        /// <summary>
+        /// Функция для создания транзакции.
+        /// </summary>
+        /// <param name="isolationLevel"></param>
+        /// <returns>
+        /// Возвращает транзакцию типа NDbTransaction, оборачивающую транзакцию, созданную внутренним соединением данного NDbConnection.
+        /// </returns>
         protected override DbTransaction BeginDbTransaction(IsolationLevel isolationLevel)
         {
             var trs = new NDbTransaction(_innerConnection.BeginTransaction(isolationLevel), _transactionVisitors, _logger);
@@ -97,7 +121,12 @@ namespace DbGovernator.NDbClasses
             return trs;
         }
 
-
+        /// <summary>
+        /// Функция для создания команды
+        /// </summary>
+        /// <returns>
+        /// Возвращает команду типа NDbCommand, оборачивающую команду, создаваемую внутренним соединением данного NDbConnection.
+        /// </returns>
         protected override DbCommand CreateDbCommand()
         {
             return new NDbCommand(_innerConnection.CreateCommand(), _visitors, _logger);

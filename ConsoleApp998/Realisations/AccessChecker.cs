@@ -7,12 +7,19 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.Realisations
 {
-    internal class AccessChecker : IVisitor
+    /// <summary>
+    /// Класс-посетитель команды, проверяющий доступ к выполнению определённых команд.
+    /// </summary>
+    public class AccessChecker : IVisitor
     {
-        public bool hadException { get; set; }
+        public bool HadException { get; set; }
         public ILogger Logger { get; set; }
 
-
+        /// <summary>
+        /// Если команда недоступна, то заменяет её на ';', тем самым не выполняя команду.
+        /// </summary>
+        /// <param name="step"></param>
+        /// <exception cref="Exception"></exception>
         public void VisitPreparing(PrepareCommand step)
         {
             if (step.Context.queryType == "delete" && step.Context.tableName == "users")
@@ -21,6 +28,11 @@ namespace DbGovernator.Realisations
                 throw new Exception("Access denied");
             }
         }
+        /// <summary>
+        /// Если команда недоступна, то заменяет её на ';', тем самым не выполняя команду.
+        /// </summary>
+        /// <param name="step"></param>
+        /// <exception cref="Exception"></exception>
         public async Task VisitPreparingAsync(PrepareCommand step)
         {
             if (step.Context.queryType == "delete" && step.Context.tableName == "users")

@@ -15,8 +15,10 @@ using System.Threading.Tasks;
 
 namespace DbGovernator
 {
-    // Класс для тестирования DbGovernator
-    // Проверяет работу транзакций
+    /// <summary>
+    /// Класс для тестирования DbGovernator.
+    /// Проверяет работу транзакций.
+    /// </summary>
     internal class TestTransaction
     {
         private IEnumerable<IVisitor> _visitors;
@@ -27,8 +29,10 @@ namespace DbGovernator
         public string command1 { get; set; }
         public string command2 { get; set; }
 
-
-        // Проверка базовой транзакции
+        /// <summary>
+        /// Проверка базовой транзакции.
+        /// </summary>
+        /// <returns></returns>
         public async Task TestBasic()
         {
             _logger.Log("Testing basic transaction");
@@ -64,17 +68,15 @@ namespace DbGovernator
             _logger.Log("*****************************");
         }
 
-
-        // Проверка ситуации конфликта транзакций
+        /// <summary>
+        /// Проверка ситуации конфликта транзакций.
+        /// </summary>
+        /// <returns></returns>
         public async Task TestConflict()
         {
             _logger.Log("Testing conflict of transactions");
             _logger.Log("*****************************");
-            //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
-            //var NDataSource = new NDbDataSource(dataSource, _visitors, Logger);
             var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider, _transactionVisitors);
-            //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
-            //var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
             var NDataSource = NDDataSourceFactory.Create();
             Task transaction1 = Task.Run(async () =>
             {
@@ -151,7 +153,10 @@ namespace DbGovernator
             _logger.Log("*****************************");
         }
 
-
+        /// <summary>
+        /// Проверка базовой транзакции через LinqToDB.
+        /// </summary>
+        /// <returns></returns>
         public async Task TestBasicLinqToDB()
         {
             _logger.Log("Testing basic transaction LinqToDB");
@@ -177,8 +182,10 @@ namespace DbGovernator
             _logger.Log("*****************************");
         }
 
-
-
+        /// <summary>
+        /// Проверка ситуации конфликта транзакций через LinqToDB.
+        /// </summary>
+        /// <returns></returns>
         public async Task TestConflictLinqToDB()
         {
             _logger.Log("Testing conflict of transactions LinqToDB");
@@ -233,7 +240,11 @@ namespace DbGovernator
             _logger.Log("*****************************");
         }
 
-
+        /// <summary>
+        /// Устанавливает значения команд для тестов транзакций.
+        /// </summary>
+        /// <param name="command1"></param>
+        /// <param name="command2"></param>
         public void SetupCommands(string command1, string command2)
         {
             this.command1 = command1;

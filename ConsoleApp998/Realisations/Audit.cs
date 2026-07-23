@@ -8,9 +8,12 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.Realisations
 {
+    /// <summary>
+    /// Класс-посетитель команды, собирающий информацию о типе запроса и названии задействованной таблицы.
+    /// </summary>
     public class Audit : IVisitor
     {
-        public bool hadException { get; set; }
+        public bool HadException { get; set; }
         public ILogger Logger { get; set; }
 
 
@@ -32,6 +35,10 @@ namespace DbGovernator.Realisations
         
         public async Task VisitResultProcessingAsync(ResultProcessing step) { }
 
+        /// <summary>
+        /// Собирает информацию о типе запроса и названии таблицы, на которую он действует.
+        /// </summary>
+        /// <param name="step"></param>
         public void VisitPreparing(PrepareCommand step)
         {
             var commandText = step.Context.Command.CommandText;
@@ -67,6 +74,10 @@ namespace DbGovernator.Realisations
             Logger.Log($"Table name: {step.Context.tableName}");
         }
 
+        /// <summary>
+        /// Асинхронно собирает информацию о типе запроса и названии таблицы, на которую он действует.
+        /// </summary>
+        /// <param name="step"></param>
         public async Task VisitPreparingAsync(PrepareCommand step)
         {
             var commandText = step.Context.Command.CommandText;

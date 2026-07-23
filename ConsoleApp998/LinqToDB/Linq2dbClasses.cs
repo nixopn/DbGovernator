@@ -7,6 +7,9 @@ using LinqToDB.Mapping;
 
 namespace DbGovernator.LinqToDB
 {
+    /// <summary>
+    /// Класс, соответствующий таблице пользователей из тестовой базы данных.
+    /// </summary>
     [Table(Name = "users")]
     public class User 
     {
@@ -16,7 +19,9 @@ namespace DbGovernator.LinqToDB
         public string Name { get; set; }
     }
 
-
+    /// <summary>
+    /// Класс, соответствующий таблице учётных записей из тестовой базы данных.
+    /// </summary>
     [Table(Name = "accounts")]
     public class Account 
     {

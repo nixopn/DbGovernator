@@ -11,6 +11,9 @@ using Npgsql;
 
 namespace DbGovernator
 {
+    /// <summary>
+    /// Фабрика для NDbDataConnection.
+    /// </summary>
     public class NDbConnectionFactory
     {
         private IEnumerable<IVisitor> _visitors;

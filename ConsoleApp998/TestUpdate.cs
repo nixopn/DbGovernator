@@ -13,8 +13,10 @@ using System.Threading.Tasks;
 
 namespace DbGovernator
 {
-    // Класс для тестирования DbGovernator
-    // Проверяет update-запросы
+    /// <summary>
+    /// Класс для тестирования DbGovernator.
+    /// Проверяет update-запросы.
+    /// </summary>
     internal class TestUpdate
     {
         private IEnumerable<IVisitor> _visitors;
@@ -27,6 +29,11 @@ namespace DbGovernator
         {
             this.command = command;
         }
+
+        /// <summary>
+        /// Проверяет асинхронный update с командой из свойства Command.
+        /// </summary>
+        /// <returns></returns>
         public async Task UpdateQ()
         {
             _logger.Log("Testing update query");
@@ -60,11 +67,13 @@ namespace DbGovernator
             _logger.Log("*****************************");
         }
 
-
+        /// <summary>
+        /// Проверяет update через LinqToDB.
+        /// </summary>
         public async Task UpdateLinqToDB()
         {
             var db = new NDbDataConnection(_visitors, _logger, _transactionVisitors);
-            var update = await db.users.Where(u => u.id == 289).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
+            var update = await db.users.Where(u => u.id == 298).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
         }
         public TestUpdate(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider, IEnumerable<ITransactionVisitor> transactionVisitors)
         {

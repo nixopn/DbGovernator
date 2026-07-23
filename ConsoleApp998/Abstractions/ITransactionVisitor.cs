@@ -7,9 +7,12 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.Abstractions
 {
+    /// <summary>
+    /// Интерфейс для механизмов, работающих по ходу различных этапов транзакции.
+    /// </summary>
     public interface ITransactionVisitor
     {
-        public bool hadException { get; set; }
+        public bool HadException { get; set; }
         public ILogger Logger { get; set; }
 
 

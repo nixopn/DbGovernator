@@ -8,6 +8,9 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.Abstractions
 {
+    /// <summary>
+    /// Абстрактный интерфейс, конкретные реализации которого создают экземпляры класса NDbDataSource.
+    /// </summary>
     public interface INDbDataSourceFactory
     {
         public DbDataSource Create();

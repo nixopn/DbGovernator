@@ -7,12 +7,17 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.Abstractions
 {
-    // Интерфейс для логирования метрик и аудита по ходу выполнения команд.
+    /// <summary>
+    /// Интерфейс для логирования различных событий во время выполнения команд и работы транзакций.
+    /// </summary>
     public interface ILogger
     {
         public string Message { get; set; }
+
         void Log(string Message);
         void LogWarning(string Message);
         void LogError(string Message);
+        void LogInfo(string Message);
+        void LogDebug(string Message);
     }
 }

@@ -7,11 +7,12 @@ using DbGovernator.Realisations;
 
 namespace DbGovernator.Abstractions
 {
-    // Интерфейс посетителей
-    // Имеет методы на все шаги выполнения команд
+    /// <summary>
+    /// Интерфейс для механизмов, работающих по ходу различных этапов выполнения команды.
+    /// </summary>
     public interface IVisitor
     {
-        public bool hadException { get; set; }
+        public bool HadException { get; set; }
         public ILogger Logger { get; set; }
 
         public void VisitPreparing(PrepareCommand step);

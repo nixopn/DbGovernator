@@ -13,8 +13,10 @@ using System.Threading.Tasks;
 
 namespace DbGovernator
 {
-    // Класс для тестирования DbGovernator
-    // Проверяет delete-запросы
+    /// <summary>
+    /// Класс для тестирования DbGovernator.
+    /// Проверяет delete-запросы.
+    /// </summary>
     internal class TestDelete
     {
         private IEnumerable<IVisitor> _visitors;
@@ -27,6 +29,11 @@ namespace DbGovernator
         {
             this.command = command;
         }
+
+        /// <summary>
+        /// Проверяет асинхронный delete с командой из свойства Command.
+        /// </summary>
+        /// <returns></returns>
         public async Task DeleteQ()
         {
             _logger.Log("Testing delete query");
@@ -38,11 +45,7 @@ namespace DbGovernator
             }
             try
             {
-                //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
-                //var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
                 var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
-                //var dataSource = NpgsqlDataSource.Create(_connectionStringProvider.GetConnectionString());
-                //var NDataSource = new NDbDataSource(dataSource, _visitors, _logger);
                 var NDataSource = NDDataSourceFactory.Create();
                 await using (var cmd = NDataSource.CreateCommand(command))
                 {
@@ -60,7 +63,9 @@ namespace DbGovernator
             _logger.Log("*****************************");
         }
 
-
+        /// <summary>
+        /// Проверяет delete через LinqToDB.
+        /// </summary>
         public async Task DeleteLinqToDB()
         {
             var db = new NDbDataConnection(_visitors, _logger, _transactionVisitors);

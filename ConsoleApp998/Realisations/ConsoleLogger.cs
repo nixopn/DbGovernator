@@ -8,7 +8,9 @@ using DbGovernator.Abstractions;
 
 namespace DbGovernator.Realisations
 {
-    // Реализация интерфейса ILogger для печати в консоль
+    /// <summary>
+    /// Реализация интерфейса ILogger для печати в консоль.
+    /// </summary>
     public class ConsoleLogger : ILogger
     {
         public string Message { get; set; }
@@ -17,7 +19,6 @@ namespace DbGovernator.Realisations
         {
             Console.WriteLine(Message);
         }
-
 
         public void LogWarning(string Message)
         {
@@ -28,6 +29,14 @@ namespace DbGovernator.Realisations
             Console.ForegroundColor = ConsoleColor.Red;
             Console.WriteLine($"Error: {Message}");
             Console.ResetColor();
+        }
+
+        public void LogInfo(string Message)
+        {
+        }
+
+        public void LogDebug(string Message)
+        {
         }
     }
 }

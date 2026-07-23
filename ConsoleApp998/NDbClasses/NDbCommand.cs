@@ -11,33 +11,44 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.NDbClasses
 {
-    // Реализует интерфейс IDbCommand, является обёрткой для DbCommand
+    /// <summary>
+    /// Реализует абстрактный класс DbCommand, является обёрткой для сех других классов, реализующих DbCommand. 
+    /// Совместимость обёртки с PostgreSql гаранитруется.
+    /// </summary>
     public class NDbCommand : DbCommand
     {
+        /// <summary>
+        /// Оборачиваемая команда.
+        /// </summary>
         private DbCommand _innerCommand;
 
-
-        // Списки шагов выполнения и посетителей, задаются в конструкторе (пока что)
+        /// <summary>
+        /// Списки шагов выполнения, задаются в конструкторе.
+        /// </summary>
         private List<ExecutionStep> _executionSteps;
+        /// <summary>
+        /// Список посетителей, получается через DI.
+        /// </summary>
         private List<IVisitor> _visitors;
+        /// <summary>
+        /// Интерфейс для логгера.
+        /// </summary>
         private ILogger _logger;
 
 
-        // Текст команды
         public override string CommandText { get => _innerCommand.CommandText; set => _innerCommand.CommandText = value; }
         public override int CommandTimeout { get => _innerCommand.CommandTimeout; set => _innerCommand.CommandTimeout = value; }
         public override CommandType CommandType { get => _innerCommand.CommandType; set => _innerCommand.CommandType = value; }
-
-        // Транзакция, частью которой является команда (команда может быть и без транзакции)
         public override UpdateRowSource UpdatedRowSource { get => _innerCommand.UpdatedRowSource; set => _innerCommand.UpdatedRowSource = value; }
         public override bool DesignTimeVisible { get => _innerCommand.DesignTimeVisible; set => _innerCommand.DesignTimeVisible = value; }
         protected override DbConnection? DbConnection { get => _innerCommand.Connection; set => _innerCommand.Connection = value; }
-
         protected override DbParameterCollection DbParameterCollection => _innerCommand.Parameters;
-
-        protected override DbTransaction? DbTransaction { get => _innerCommand.Transaction; set
+        protected override DbTransaction? DbTransaction
+        {
+            get => _innerCommand.Transaction;
+            set
             {
-                if(value is NDbTransaction ndbtrs)
+                if (value is NDbTransaction ndbtrs)
                 {
                     _innerCommand.Transaction = ndbtrs.GetTransaction();
                 }
@@ -45,9 +56,12 @@ namespace DbGovernator.NDbClasses
                 {
                     _innerCommand.Transaction = value;
                 }
-            }}
+            }
+        }
 
-        // Конструктор на основе другой команды
+        /// <summary>
+        /// Конструктор на основе другой команды.
+        /// </summary>
         public NDbCommand(DbCommand innerCommand, IEnumerable<IVisitor> visitors, ILogger Logger)
         {
             _executionSteps = new List<ExecutionStep>
@@ -69,9 +83,10 @@ namespace DbGovernator.NDbClasses
             _innerCommand = innerCommand;
         }
 
-
-
-        // Конструктор для команды в транзакции
+        /// <summary>
+        /// Конструктор для команды в транзакции.
+        /// Привязывает команду к определённому соединению и транзакции.
+        /// </summary>
         public NDbCommand(DbCommand innerCommand, DbConnection connection, IEnumerable<IVisitor> visitors, ILogger Logger, DbTransaction? transaction = null)
         {
             _executionSteps = new List<ExecutionStep>
@@ -98,20 +113,6 @@ namespace DbGovernator.NDbClasses
             }
         }
 
-
-
-
-
-        // Добавляет посетителя
-        public void AddVisitor(IVisitor visitor)
-        {
-            _visitors.Add(visitor);
-        }
-        // Удаляет посетителя
-        public void DeleteVisitor(IVisitor visitor)
-        {
-            _visitors.Remove(visitor);
-        }
         public override void Cancel()
         {
             _innerCommand.Cancel();
@@ -127,21 +128,10 @@ namespace DbGovernator.NDbClasses
             _innerCommand.Dispose();
         }
 
-
-        public override int ExecuteNonQuery()
-        {
-            var executionContext = new ExecutionContext();
-            executionContext.Command = _innerCommand;
-
-            var result = ExecuteSteps<int>(() => _innerCommand.ExecuteNonQuery(), executionContext);
-            executionContext.Result = result;
-            return result;
-            //int ret = _innerCommand.ExecuteNonQuery();
-            //return ret;
-        }
-
-
-        // Выполнение шагов для асинхронных методов
+        /// <summary>
+        /// Данный метод вызывает всех посетителей на каждом шагу и обрабатывает ошибки.
+        /// Выполнение шагов для асинхронных методов.
+        /// </summary>
         private async Task<T> ExecuteStepsAsync<T>(Func<Task<T>?> executeFunc, ExecutionContext executionContext)
         {
             executionContext.executionFunction = executeFunc;
@@ -149,7 +139,8 @@ namespace DbGovernator.NDbClasses
             {
                 foreach (var visitor in _visitors)
                 {
-                    if (visitor.hadException)
+                    /// Если посетитель уже ошибался на более ранних шагах, то его выполнение пропускается.
+                    if (visitor.HadException)
                     {
                         continue;
                     }
@@ -159,24 +150,31 @@ namespace DbGovernator.NDbClasses
                     }
                     catch (Exception ex)
                     {
-                        visitor.hadException = true;
+                        visitor.HadException = true;
                         _logger.Log(ex.Message);
                     }
-                    //step.AcceptVisitor(visitor, executionContext);
                 }
             }
             if (executionContext.Result == null)
             {
                 foreach (var visitor in _visitors)
                 {
-                    visitor.hadException = false;
+                    visitor.HadException = false;
                 }
                 throw new Exception("Command execution failed, result is null");
             }
             return (T)executionContext.Result;
         }
 
-
+        /// <summary>
+        /// Данный метод вызывает всех посетителей на каждом шагу и обрабатывает ошибки.
+        /// Выполнение шагов для синхронных методов.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="executeFunc"></param>
+        /// <param name="executionContext"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         private T ExecuteSteps<T>(Func<object?> executeFunc, ExecutionContext executionContext)
         {
             executionContext.executionFunction = executeFunc;
@@ -184,7 +182,7 @@ namespace DbGovernator.NDbClasses
             {
                 foreach (var visitor in _visitors)
                 {
-                    if (visitor.hadException)
+                    if (visitor.HadException)
                     {
                         continue;
                     }
@@ -194,28 +192,40 @@ namespace DbGovernator.NDbClasses
                     }
                     catch (Exception ex)
                     {
-                        visitor.hadException = true;
+                        visitor.HadException = true;
                         _logger.Log(ex.Message);
                     }
-                    //step.AcceptVisitor(visitor, executionContext);
                 }
             }
             if (executionContext.Result == null)
             {
                 foreach (var visitor in _visitors)
                 {
-                    visitor.hadException = false;
+                    visitor.HadException = false;
                 }
                 throw new Exception("Command execution failed, result is null");
             }
             return (T)executionContext.Result;
         }
 
+        /// <summary>
+        /// Переопределённый метод выполнения запросов.
+        /// </summary>
+        /// <returns></returns>
+        public override int ExecuteNonQuery()
+        {
+            var executionContext = new ExecutionContext();
+            executionContext.Command = _innerCommand;
 
+            var result = ExecuteSteps<int>(() => _innerCommand.ExecuteNonQuery(), executionContext);
+            executionContext.Result = result;
+            return result;
+        }
 
-
-
-        // Для выполнения запросов по типу insert, update, delete
+        /// <summary>
+        /// Асинхронная версия метода для выполнения запросов.
+        /// Для выполнения запросов по типу insert, update, delete
+        /// </summary>
         public override async Task<int> ExecuteNonQueryAsync(CancellationToken token)
         {
             var executionContext = new ExecutionContext();
@@ -227,8 +237,9 @@ namespace DbGovernator.NDbClasses
         }
 
 
-
-        // Для выполнения запросов, возвращающих одно конкретное значение
+        /// <summary>
+        /// Для выполнения запросов, возвращающих одно конкретное значение.
+        /// </summary>
         public override object? ExecuteScalar()
         {
             var executionContext = new ExecutionContext();
@@ -239,6 +250,11 @@ namespace DbGovernator.NDbClasses
             return result;
         }
 
+        /// <summary>
+        /// Для асинхронного выполнения запросов, возвращающих одно конкретное значение.
+        /// </summary>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public override async Task<object?> ExecuteScalarAsync(CancellationToken token)
         {
             var executionContext = new ExecutionContext();
@@ -259,6 +275,12 @@ namespace DbGovernator.NDbClasses
             return _innerCommand.CreateParameter();
         }
 
+        /// <summary>
+        /// Переопределённый метод запуска считывателя строк таблицы. 
+        /// Тоже проходит через всех посетителей.
+        /// </summary>
+        /// <param name="behavior"></param>
+        /// <returns></returns>
         protected override DbDataReader ExecuteDbDataReader(CommandBehavior behavior)
         {
             var executionContext = new ExecutionContext();

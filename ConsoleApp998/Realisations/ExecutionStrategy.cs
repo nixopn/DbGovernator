@@ -11,10 +11,12 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.Realisations
 {
-    // Контролирует процесс выполнения запроса
+    /// <summary>
+    /// Контролирует процесс выполнения запроса.
+    /// </summary>
     public class ExecutionStrategy : IVisitor
     {
-        public bool hadException { get; set; }
+        public bool HadException { get; set; }
         public ILogger Logger { get; set; }
 
         private int _maxRetries = 9; // Максимальное количество попыток повтора в случае провала запроса
@@ -23,20 +25,24 @@ namespace DbGovernator.Realisations
 
         public ExecutionStrategy()
         {
-            hadException = false;
+            HadException = false;
         }
 
 
         public void Reset()
         {
-            hadException = false;
+            HadException = false;
         }
-        // Ставит количество попыток
+        /// <summary>
+        /// Ставит количество попыток.
+        /// </summary>
         public void SetTries(int maxRetries)
         {
             _maxRetries = maxRetries;
         }
-        // Ставит задержку между попытками
+        /// <summary>
+        /// Ставит задержку между попытками.
+        /// </summary>
         public void SetRetryDelay(int retryDelayMs)
         {
             _retryDelayMs = retryDelayMs;
@@ -51,7 +57,9 @@ namespace DbGovernator.Realisations
 
         }
 
-        // Выполнение запроса
+        /// <summary>
+        /// Выполнение запроса.
+        /// </summary>
         public void VisitExecution(ExecutionSt step)
         {
             int i = 1;
@@ -113,6 +121,12 @@ namespace DbGovernator.Realisations
 
         public async Task VisitBeforeExecutionAsync(BeforeExecute step) { }
 
+        /// <summary>
+        /// Асинхронное выполнение запроса.
+        /// </summary>
+        /// <param name="step"></param>
+        /// <returns></returns>
+        /// <exception cref="Exception"></exception>
         public async Task VisitExecutionAsync(ExecutionSt step)
         {
             int i = 1;

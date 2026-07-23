@@ -7,42 +7,68 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.Realisations
 {
-    // Собирает следующие метрики:
-    // Время запроса
-    // Количество затронутых столбцов
-    // Сырой sql-запрос
+    ///<summary>
+    /// Собирает следующие метрики:
+    /// Время запроса
+    /// Количество затронутых столбцов
+    /// Сырой sql-запрос
+    /// </summary>
     public class Metrics : IVisitor
     {
-        public bool hadException { get; set; }
+        public bool HadException { get; set; }
         public ILogger Logger { get; set; }
 
+        /// <summary>
+        /// Логирует время выполнения запроса и затронутые строки.
+        /// </summary>
+        /// <param name="step"></param>
         public void VisitResultProcessing(ResultProcessing step)
         {
             Logger.Log($"Duration: {step.Context.Duration.TotalMilliseconds}");
             Logger.Log($"Rows Affected: {step.Context.affectedRows}");
         }
 
+        /// <summary>
+        /// Асинхронно логирует время выполнения запроса и затронутые строки.
+        /// </summary>
+        /// <param name="step"></param>
         public async Task VisitResultProcessingAsync(ResultProcessing step)
         {
             Logger.Log($"Duration: {step.Context.Duration.TotalMilliseconds}");
             Logger.Log($"Rows Affected: {step.Context.affectedRows}");
         }
 
+        /// <summary>
+        /// Собирает время после выполнения запроса.
+        /// </summary>
+        /// <param name="step"></param>
         public void VisitAfterExecution(AfterExecution step)
         {
             step.Context.After = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Собирает время после выполнения запроса.
+        /// </summary>
+        /// <param name="step"></param>
         public async Task VisitAfterExecutionAsync(AfterExecution step)
         { 
             step.Context.After = DateTime.UtcNow; 
         }
 
+        /// <summary>
+        /// Собирает время до выполнения запроса.
+        /// </summary>
+        /// <param name="step"></param>
         public void VisitBeforeExecution(BeforeExecute step)
         {
             step.Context.Before = DateTime.UtcNow;
         }
 
+        /// <summary>
+        /// Собирает время до выполнения запроса.
+        /// </summary>
+        /// <param name="step"></param>
         public async Task VisitBeforeExecutionAsync(BeforeExecute step)
         { 
             step.Context.Before = DateTime.UtcNow; 
@@ -51,11 +77,19 @@ namespace DbGovernator.Realisations
         public void VisitExecution(ExecutionSt step) { }
         public async Task VisitExecutionAsync(ExecutionSt step) { }
 
+        /// <summary>
+        /// Собирает сырой sql-запрос.
+        /// </summary>
+        /// <param name="step"></param>
         public void VisitPreparing(PrepareCommand step)
         {
             Logger.Log($"SQL: {step.Context.Command.CommandText}");
         }
 
+        /// <summary>
+        /// Собирает сырой sql-запрос.
+        /// </summary>
+        /// <param name="step"></param>
         public async Task VisitPreparingAsync(PrepareCommand step)
         { 
             Logger.Log($"SQL: {step.Context.Command.CommandText}");

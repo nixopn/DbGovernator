@@ -20,6 +20,7 @@ namespace app
     {
         public static async Task Main()
         {
+            //Настройка DI.
             IServiceCollection services = new ServiceCollection();
             services.AddSingleton<INDbDataSourceFactory, NDbDataSourceFactory>();
             services.AddSingleton<ILogger, ConsoleLogger>();

@@ -7,27 +7,54 @@ using System.Threading.Tasks;
 
 namespace DbGovernator
 {
-    // Контекст для посетителей
+    /// <summary>
+    /// Контекст для посетителей.
+    /// </summary>
     public class ExecutionContext
     {
-        public DbCommand Command { get; set; } // Для выяснения сырого запроса
+        /// <summary>
+        /// Для выяснения сырого запроса.
+        /// </summary>
+        public DbCommand Command { get; set; }
 
-        // Свойства для выяснения длительности запроса
+        /// <summary>
+        /// Время, которое засекается перед началом выполнения команды.
+        /// </summary>
         public DateTime Before { get; set; }
+
+        /// <summary>
+        /// Время, которое засекается после выполнения команды.
+        /// </summary>
         public DateTime After { get; set; }
+
+        /// <summary>
+        /// Промежуток между началом и концом выполнения команды.
+        /// </summary>
         public TimeSpan Duration => After - Before;
 
-        // Хранит результат функции исполняющей запрос
+        /// <summary>
+        /// Хранит результат функции исполняющей запрос.
+        /// </summary>
         public object? Result { get; set; }
-        // Если резльутат int, то записывается сюда
+
+        /// <summary>
+        /// Если резльутат int, то записывается сюда.
+        /// </summary>
         public int affectedRows { get; set; }
 
-        // Имя таблицы
+        /// <summary>
+        /// Имя таблицы.
+        /// </summary>
         public string? tableName { get; set; }
-        // Тип запроса
+
+        /// <summary>
+        /// Тип запроса
+        /// </summary>
         public string? queryType { get; set; }
 
-        // Делегат для передачи функции исполняющей запрос
+        /// <summary>
+        /// Делегат для передачи функции исполняющей запрос.
+        /// </summary>
         public Func<object?> executionFunction { get; set; }
     }
 }
