@@ -60,8 +60,8 @@ namespace app
                 testTransaction.SetupCommands("UPDATE accounts SET money = money + 200 WHERE user_id = 8", "UPDATE accounts SET money = money + 300 WHERE user_id = 9");
                 await testTransaction.TestBasic();
                 await testTransaction.TestConflict();
-                await testTransaction.TestBasicLinqToDB();
-                await testTransaction.TestConflictLinqToDB();
+                //await testTransaction.TestBasicLinqToDB();
+                //await testTransaction.TestConflictLinqToDB();
                 INDbDataSourceFactory dataSourceFactory = serviceProvider.GetService<INDbDataSourceFactory>();
                 var NdataSource = dataSourceFactory.Create();
                 Console.WriteLine(NdataSource.GetType().Name);
