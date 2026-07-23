@@ -3,6 +3,7 @@ using DbGovernator.Abstractions;
 using DbGovernator.LinqToDB;
 using DbGovernator.NDbClasses;
 using DbGovernator.Realisations;
+using LinqToDB;
 using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using System;
@@ -76,8 +77,9 @@ namespace DbGovernator
         /// </summary>
         public void SelectLinqToDB()
         {
-            var db = new NDbDataConnection(_visitors, _logger, _transactionVisitors);
-            var selected = db.users.Where(u => u.id >= 200).ToList();
+            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
+            var db = dbc.CreateConnection();
+            var selected = db.GetTable<User>().Where(u => u.id >= 200).ToList();
 
 
             foreach (var u in selected)

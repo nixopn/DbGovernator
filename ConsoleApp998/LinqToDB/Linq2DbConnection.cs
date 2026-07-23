@@ -1,38 +1,68 @@
-﻿using DbGovernator.Realisations;
+﻿using DbGovernator.Abstractions;
+using DbGovernator.NDbClasses;
+using DbGovernator.Realisations;
 using LinqToDB;
 using LinqToDB.Configuration;
 using LinqToDB.Data;
+using LinqToDB.DataProvider.PostgreSQL;
 using LinqToDB.DataProvider.SqlServer;
 using LinqToDB.Interceptors;
+using LinqToDB.Mapping;
+using Npgsql;
 using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Npgsql;
-using DbGovernator.NDbClasses;
-using DbGovernator.Abstractions;
-using LinqToDB.DataProvider.PostgreSQL;
 
 namespace DbGovernator.LinqToDB
 {
     /// <summary>
     /// Класс-наследник DataConnection, реализующий взаимодействие NDb-классов с LinqToDB.
     /// </summary>
-    public class  NDbDataConnection : DataConnection
+    public class  NDbDataConnectionFactory
     {
-        public NDbDataConnection(IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors)
-            : base(new DataOptions()
-                  .UsePostgreSQL(PostgreSQLVersion.v15)
-                  .UseConnection(new NDbConnectionFactory(visitors, logger, transactionVisitors).CreateConnection()))
+        private MappingSchema _mappingSchema;
+        private IEnumerable<IVisitor> _visitors;
+        private IEnumerable<ITransactionVisitor> _transactionVisitors;
+        private ILogger _logger;
+        public NDbDataConnectionFactory(IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors)
         {
-            users = this.GetTable<User>();
-            accounts = this.GetTable<Account>();
+            _visitors = visitors;
+            _logger = logger;
+            _transactionVisitors = transactionVisitors;
+            _mappingSchema = CreateMappingSchema();
         }
 
+        private MappingSchema CreateMappingSchema()
+        {
+            var schema = new MappingSchema();
+            var builder = new FluentMappingBuilder(schema);
+            builder.Entity<User>()
+                .HasTableName("users")
+                .Property(x => x.id).IsPrimaryKey().IsIdentity()
+                .Property(x => x.Name).HasColumnName("name");
+            builder.Entity<Account>()
+                .HasTableName("users")
+                .Property(x => x.id).IsPrimaryKey().IsIdentity()
+                .Property(x => x.Money).HasColumnName("money")
+                .Property(x => x.user_id).HasColumnName("user_id");
+            builder.Build();
+            return schema;
+        }
 
-        public ITable<User> users { get; set; }
-        public ITable<Account> accounts { get; set; }
+        public DataConnection CreateConnection()
+        {
+            var npgsqlCon = new NpgsqlConnection(new ConnectionStringProvider().GetConnectionString());
+            var ndbCon = new NDbConnection(npgsqlCon, _visitors, _logger, _transactionVisitors);
+            var dataConnection = new DataConnection(new DataOptions()
+                .UsePostgreSQL(PostgreSQLVersion.v15)
+                .UseConnection(ndbCon)
+                .UseMappingSchema(_mappingSchema)
+            );
+            return dataConnection;
+
+        }
     }
 }

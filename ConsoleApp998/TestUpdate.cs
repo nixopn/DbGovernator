@@ -72,8 +72,9 @@ namespace DbGovernator
         /// </summary>
         public async Task UpdateLinqToDB()
         {
-            var db = new NDbDataConnection(_visitors, _logger, _transactionVisitors);
-            var update = await db.users.Where(u => u.id == 298).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
+            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
+            var db = dbc.CreateConnection();
+            var update = await db.GetTable<User>().Where(u => u.id == 298).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
         }
         public TestUpdate(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider, IEnumerable<ITransactionVisitor> transactionVisitors)
         {

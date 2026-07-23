@@ -36,7 +36,7 @@ namespace app
             services.AddSingleton<NDbDataSourceFactory>();
             services.AddSingleton<IConnectionStringProvider, ConnectionStringProvider>();
             services.AddSingleton<NDbConnectionFactory>();
-            services.AddSingleton<NDbDataConnection>();
+            services.AddSingleton<NDbDataConnectionFactory>();
             services.AddSingleton<ITransactionVisitor, TransactionMetrics>();
             using (var serviceProvider = services.BuildServiceProvider())
             {
@@ -60,8 +60,9 @@ namespace app
                 testTransaction.SetupCommands("UPDATE accounts SET money = money + 200 WHERE user_id = 8", "UPDATE accounts SET money = money + 300 WHERE user_id = 9");
                 await testTransaction.TestBasic();
                 await testTransaction.TestConflict();
-                //await testTransaction.TestBasicLinqToDB();
-                //await testTransaction.TestConflictLinqToDB();
+                var testTransaction222 = serviceProvider.GetRequiredService<TestTransaction>();
+                await testTransaction222.TestBasicLinqToDB();
+                await testTransaction222.TestConflictLinqToDB();
                 INDbDataSourceFactory dataSourceFactory = serviceProvider.GetService<INDbDataSourceFactory>();
                 var NdataSource = dataSourceFactory.Create();
                 Console.WriteLine(NdataSource.GetType().Name);
@@ -101,8 +102,9 @@ namespace app
                 }
 
 
-                var db = serviceProvider.GetRequiredService<NDbDataConnection>();
-                var selected = db.users.Where(u => u.id == 200).ToList();
+                var dbc = serviceProvider.GetRequiredService<NDbDataConnectionFactory>();
+                var db = dbc.CreateConnection();
+                var selected = db.GetTable<User>().Where(u => u.id == 200).ToList();
 
 
                 foreach (var u in selected)
@@ -111,7 +113,7 @@ namespace app
                 }
 
 
-                var deleteusers = await db.users.Where(u => u.id == 997).DeleteAsync();
+                var deleteusers = await db.GetTable<User>().Where(u => u.id == 997).DeleteAsync();
                 //var update = await db.users.Where(u => u.id == 289).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
                 var newUser = new User { Name = "AAALinqToDBUser" };
                 var insertedId = db.Insert(newUser);

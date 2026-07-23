@@ -161,13 +161,14 @@ namespace DbGovernator
         {
             _logger.Log("Testing basic transaction LinqToDB");
             _logger.Log("*****************************");
-            var db = new NDbDataConnection(_visitors, _logger, _transactionVisitors);
+            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
+            var db = dbc.CreateConnection();
             using (var trs = await db.BeginTransactionAsync())
             {
                 try
                 {
-                    var update = await db.accounts.Where(u => u.id == 8).Set(u => u.Money, u => u.Money + 200).UpdateAsync();
-                    var update2 = await db.accounts.Where(u => u.id == 9).Set(u => u.Money, u => u.Money + 300).UpdateAsync();
+                    var update = await db.GetTable<Account>().Where(u => u.id == 8).Set(u => u.Money, u => u.Money + 200).UpdateAsync();
+                    var update2 = await db.GetTable<Account>().Where(u => u.id == 9).Set(u => u.Money, u => u.Money + 300).UpdateAsync();
                 }
                 catch (Exception ex)
                 {
@@ -190,15 +191,16 @@ namespace DbGovernator
         {
             _logger.Log("Testing conflict of transactions LinqToDB");
             _logger.Log("*****************************");
-            var db = new NDbDataConnection(_visitors, _logger, _transactionVisitors);
+            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
+            var db = dbc.CreateConnection();
             Task transaction1 = Task.Run(async () =>
             {
                             using (var trs = await db.BeginTransactionAsync())
             {
                 try
                 {
-                    var update = await db.accounts.Where(u => u.id == 8).Set(u => u.Money, u => u.Money + 200).UpdateAsync();
-                    var update2 = await db.accounts.Where(u => u.id == 9).Set(u => u.Money, u => u.Money + 300).UpdateAsync();
+                    var update = await db.GetTable<Account>().Where(u => u.id == 8).Set(u => u.Money, u => u.Money + 200).UpdateAsync();
+                    var update2 = await db.GetTable<Account>().Where(u => u.id == 9).Set(u => u.Money, u => u.Money + 300).UpdateAsync();
                 }
                 catch (Exception ex)
                 {
@@ -214,8 +216,8 @@ namespace DbGovernator
                 {
                     try
                     {
-                        var update = await db.accounts.Where(u => u.id == 9).Set(u => u.Money, u => u.Money + 300).UpdateAsync();
-                        var update2 = await db.accounts.Where(u => u.id == 8).Set(u => u.Money, u => u.Money + 200).UpdateAsync();
+                        var update = await db.GetTable<Account>().Where(u => u.id == 9).Set(u => u.Money, u => u.Money + 300).UpdateAsync();
+                        var update2 = await db.GetTable<Account>().Where(u => u.id == 8).Set(u => u.Money, u => u.Money + 200).UpdateAsync();
                     }
                     catch (Exception ex)
                     {
