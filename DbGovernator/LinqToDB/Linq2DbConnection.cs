@@ -28,7 +28,10 @@ namespace DbGovernator.LinqToDB
         private IEnumerable<ITransactionVisitor> _transactionVisitors;
         private ILogger _logger;
         private IConnectionStringProvider _connectionStringProvider;
-        public NDbDataConnectionFactory(IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors, IConnectionStringProvider connectionStringProvider)
+        public NDbDataConnectionFactory(IEnumerable<IVisitor> visitors, 
+            ILogger logger, 
+            IEnumerable<ITransactionVisitor> transactionVisitors, 
+            IConnectionStringProvider connectionStringProvider)
         {
             _visitors = visitors;
             _logger = logger;

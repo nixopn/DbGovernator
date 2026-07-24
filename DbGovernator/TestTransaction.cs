@@ -277,7 +277,7 @@ namespace DbGovernator
 
         public async Task TestConflictDapper()
         {
-            _logger.LogInfo("Testing conflict of transactions LinqToDB");
+            _logger.LogInfo("Testing conflict of transactions Dapper");
             _logger.LogInfo("*****************************");
             var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider, _transactionVisitors);
             var NDataSource = NDDataSourceFactory.Create();
