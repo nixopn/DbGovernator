@@ -71,10 +71,11 @@ namespace DbGovernator
         /// </summary>
         public async Task InsertLinqToDB()
         {
-            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
+            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors, _connectionStringProvider);
             var db = dbc.CreateConnection();
             var newUser = new User { Name = "AAALinqToDBUser" };
             var insertedId = db.Insert(newUser);
+            await db.CloseAsync();
         }
 
         public async Task InsertDapper()

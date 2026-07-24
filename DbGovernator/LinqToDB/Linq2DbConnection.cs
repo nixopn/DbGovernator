@@ -27,12 +27,14 @@ namespace DbGovernator.LinqToDB
         private IEnumerable<IVisitor> _visitors;
         private IEnumerable<ITransactionVisitor> _transactionVisitors;
         private ILogger _logger;
-        public NDbDataConnectionFactory(IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors)
+        private IConnectionStringProvider _connectionStringProvider;
+        public NDbDataConnectionFactory(IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors, IConnectionStringProvider connectionStringProvider)
         {
             _visitors = visitors;
             _logger = logger;
             _transactionVisitors = transactionVisitors;
             _mappingSchema = CreateMappingSchema();
+            _connectionStringProvider = connectionStringProvider;
         }
 
         private MappingSchema CreateMappingSchema()
@@ -54,7 +56,7 @@ namespace DbGovernator.LinqToDB
 
         public DataConnection CreateConnection()
         {
-            var npgsqlCon = new NpgsqlConnection(new ConnectionStringProvider().GetConnectionString());
+            var npgsqlCon = new NpgsqlConnection(_connectionStringProvider.GetConnectionString());
             var ndbCon = new NDbConnection(npgsqlCon, _visitors, _logger, _transactionVisitors);
             var dataConnection = new DataConnection(new DataOptions()
                 .UsePostgreSQL(PostgreSQLVersion.v15)

@@ -6,20 +6,20 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.EF
 {
-    public class users
+    public class Users
     {
         public int id { get; set; }
         public string name { get; set; }
-        public List<accounts> accounts { get; set; }
+        public List<Accounts> accounts { get; set; }
     }
 
-    public class accounts
+    public class Accounts
     {
         public int id { get; set; }
         public int money { get; set; }
         public int user_id { get; set; }
 
-        public users User { get; set; }
+        public Users User { get; set; }
     }
 
 }

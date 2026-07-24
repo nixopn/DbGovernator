@@ -163,7 +163,7 @@ namespace DbGovernator
         {
             _logger.LogInfo("Testing basic transaction LinqToDB");
             _logger.LogInfo("*****************************");
-            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
+            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors, _connectionStringProvider);
             var db = dbc.CreateConnection();
             using (var trs = await db.BeginTransactionAsync())
             {
@@ -179,7 +179,7 @@ namespace DbGovernator
                     return;
                 }
             }
-
+            await db.CloseAsync();
 
             _logger.LogInfo("Test passed");
             _logger.LogInfo("*****************************");
@@ -193,7 +193,7 @@ namespace DbGovernator
         {
             _logger.LogInfo("Testing conflict of transactions LinqToDB");
             _logger.LogInfo("*****************************");
-            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
+            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors, _connectionStringProvider);
             var db = dbc.CreateConnection();
             Task transaction1 = Task.Run((Func<Task?>)(async () =>
             {
@@ -235,6 +235,7 @@ namespace DbGovernator
             }
             catch (Exception ex)
             {
+                await db.CloseAsync();
                 _logger.LogInfo("Test failed");
                 _logger.LogInfo($"Error in some transaction {ex.Message}");
                 _logger.LogInfo("*****************************");
@@ -269,6 +270,7 @@ namespace DbGovernator
                 _logger.LogInfo("*****************************");
                 return;
             }
+            ndbCon.Close();
             _logger.LogInfo("Test passed");
             _logger.LogInfo("*****************************");
         }
@@ -277,8 +279,10 @@ namespace DbGovernator
         {
             _logger.LogInfo("Testing conflict of transactions LinqToDB");
             _logger.LogInfo("*****************************");
-            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
-            var ndbCon = dbc.CreateConnection();
+            var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider, _transactionVisitors);
+            var NDataSource = NDDataSourceFactory.Create();
+            var ndbCon = NDataSource.OpenConnection();
+            var ndbTrs = ndbCon.BeginTransaction();
             Task transaction1 = Task.Run((Func<Task?>)(async () =>
             {
                 var ndbTrs = ndbCon.BeginTransaction();

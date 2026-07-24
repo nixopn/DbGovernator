@@ -69,9 +69,10 @@ namespace DbGovernator
         /// </summary>
         public async Task DeleteLinqToDB()
         {
-            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
+            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors, _connectionStringProvider);
             var db = dbc.CreateConnection();
             var deleteusers = await db.GetTable<User>().Where(u => u.id == 986).DeleteAsync();
+            await db.CloseAsync();
         }
 
         public async Task DeleteDapper()

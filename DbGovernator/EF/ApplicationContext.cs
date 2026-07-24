@@ -14,8 +14,8 @@ namespace DbGovernator.EF
     public class ApplicationContext : DbContext
     {
         private NDbDataSource _dataSource;
-        public DbSet<users> users => Set<users>();
-        public DbSet<accounts> accounts => Set<accounts>();
+        public DbSet<Users> users => Set<Users>();
+        public DbSet<Accounts> accounts => Set<Accounts>();
         public ApplicationContext(NDbDataSource ndbDataSource)
         {
             _dataSource = ndbDataSource;

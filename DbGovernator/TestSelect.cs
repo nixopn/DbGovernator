@@ -78,7 +78,7 @@ namespace DbGovernator
         /// </summary>
         public void SelectLinqToDB()
         {
-            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
+            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors, _connectionStringProvider);
             var db = dbc.CreateConnection();
             var selected = db.GetTable<User>().Where(u => u.id >= 200).ToList();
 
@@ -87,6 +87,7 @@ namespace DbGovernator
             {
                 Console.WriteLine($"{u.Name}");
             }
+            db.Close();
         }
 
         public void SelectDapper()

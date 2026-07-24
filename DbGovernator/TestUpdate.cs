@@ -73,9 +73,10 @@ namespace DbGovernator
         /// </summary>
         public async Task UpdateLinqToDB()
         {
-            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
+            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors, _connectionStringProvider);
             var db = dbc.CreateConnection();
             var update = await db.GetTable<User>().Where(u => u.id == 299).Set(u => u.Name, u => "aaaaaaaa").UpdateAsync();
+            await db.CloseAsync();
         }
 
         public async Task UpdateDapper()
