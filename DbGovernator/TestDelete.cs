@@ -1,4 +1,5 @@
-﻿using DbGovernator;
+﻿using Dapper;
+using DbGovernator;
 using DbGovernator.Abstractions;
 using DbGovernator.LinqToDB;
 using DbGovernator.NDbClasses;
@@ -71,6 +72,34 @@ namespace DbGovernator
             var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
             var db = dbc.CreateConnection();
             var deleteusers = await db.GetTable<User>().Where(u => u.id == 986).DeleteAsync();
+        }
+
+        public async Task DeleteDapper()
+        {
+            _logger.LogInfo("Testing delete query");
+            _logger.LogInfo("*****************************");
+            if (!command.ToLower().Contains("delete"))
+            {
+                _logger.LogInfo("Invalid command");
+                return;
+            }
+            try
+            {
+                var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
+                var NDataSource = NDDataSourceFactory.Create();
+                var ndbCon = NDataSource.OpenConnection();
+                var sql = "DELETE FROM users WHERE id=@Id";
+                var rows = ndbCon.Execute(sql, new { Id = 997 });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInfo("Test failed");
+                _logger.LogInfo(ex.Message);
+                _logger.LogInfo("*****************************");
+                return;
+            }
+            _logger.LogInfo("Test passed");
+            _logger.LogInfo("*****************************");
         }
         public TestDelete(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider, IEnumerable<ITransactionVisitor> transactionVisitors)
         {

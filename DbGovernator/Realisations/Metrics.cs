@@ -24,7 +24,7 @@ namespace DbGovernator.Realisations
         public void VisitResultProcessing(ResultProcessing step)
         {
             Logger.LogInfo($"Duration: {step.Context.Duration.TotalMilliseconds}");
-            Logger.LogInfo($"Rows Affected: {step.Context.affectedRows}");
+            Logger.LogInfo($"Rows Affected: {step.Context.AffectedRows}");
         }
 
         /// <summary>
@@ -34,7 +34,7 @@ namespace DbGovernator.Realisations
         public async Task VisitResultProcessingAsync(ResultProcessing step)
         {
             Logger.LogInfo($"Duration: {step.Context.Duration.TotalMilliseconds}");
-            Logger.LogInfo($"Rows Affected: {step.Context.affectedRows}");
+            Logger.LogInfo($"Rows Affected: {step.Context.AffectedRows}");
         }
 
         /// <summary>

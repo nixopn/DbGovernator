@@ -21,7 +21,7 @@ namespace DbGovernator.Realisations
         /// <exception cref="Exception"></exception>
         public void VisitPreparing(PrepareCommand step)
         {
-            if (step.Context.queryType == "delete" && step.Context.tableName == "users")
+            if (step.Context.QueryType == "delete" && step.Context.TableName == "users")
             {
                 step.Context.Command.CommandText = ";";
                 throw new Exception("Access denied");
@@ -34,7 +34,7 @@ namespace DbGovernator.Realisations
         /// <exception cref="Exception"></exception>
         public async Task VisitPreparingAsync(PrepareCommand step)
         {
-            if (step.Context.queryType == "delete" && step.Context.tableName == "users")
+            if (step.Context.QueryType == "delete" && step.Context.TableName == "users")
             {
                 step.Context.Command.CommandText = ";";
                 throw new Exception("Access denied");

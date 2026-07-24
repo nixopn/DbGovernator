@@ -1,4 +1,5 @@
-﻿using DbGovernator;
+﻿using Dapper;
+using DbGovernator;
 using DbGovernator.Abstractions;
 using DbGovernator.LinqToDB;
 using DbGovernator.NDbClasses;
@@ -86,6 +87,37 @@ namespace DbGovernator
             {
                 Console.WriteLine($"{u.Name}");
             }
+        }
+
+        public void SelectDapper()
+        {
+            _logger.LogInfo("Testing select query");
+            _logger.LogInfo("*****************************");
+            if (!Command.ToLower().Contains("select"))
+            {
+                _logger.LogInfo("Invlaid command");
+                return;
+            }
+            try
+            {
+                var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
+                var NDataSource = NDDataSourceFactory.Create();
+                var ndbCon = NDataSource.OpenConnection();
+                var users = ndbCon.QueryFirstOrDefault<User>("SELECT * FROM users WHERE id=@Id;", new { Id = 229 });
+                if(users != null)
+                {
+                    _logger.LogInfo($"Found user: id {users.id} name {users.Name}");
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInfo("Test failed");
+                _logger.LogInfo(ex.Message);
+                _logger.LogInfo("*****************************");
+                return;
+            }
+            _logger.LogInfo("Test passed");
+            _logger.LogInfo("*****************************");
         }
         public TestSelect(IConnectionStringProvider connectionStringProvider, IEnumerable<IVisitor> visitors, ILogger logger, IEnumerable<ITransactionVisitor> transactionVisitors)
         {

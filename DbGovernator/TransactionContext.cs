@@ -1,4 +1,5 @@
-﻿using System;
+﻿using DbGovernator.Abstractions;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -32,5 +33,10 @@ namespace DbGovernator
         /// Промежуток между началом и концом транзакции.
         /// </summary>
         public TimeSpan Duration => After - Before;
+
+        /// <summary>
+        /// Хранит информацию о том, была ли у конкретного посетителя ошибка.
+        /// </summary>
+        public Dictionary<ITransactionVisitor, bool> HadError { get; set; } = new();
     }
 }

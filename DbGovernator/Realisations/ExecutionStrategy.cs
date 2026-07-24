@@ -64,11 +64,11 @@ namespace DbGovernator.Realisations
             {
                 try
                 {
-                    var result = step.Context.executionFunction();
+                    var result = step.Context.ExecutionFunction();
                     if(result is int)
                     {
                         step.Context.Result = result;
-                        step.Context.affectedRows = (int)result;
+                        step.Context.AffectedRows = (int)result;
                         return;
                     }
                     if(result is not Task)
@@ -80,7 +80,7 @@ namespace DbGovernator.Realisations
                     // Если результат int в случае ExecuteNonQuery, ExecuteScalar, то записывает в affectedRows
                     if (step.Context.Result is int)
                     {
-                        step.Context.affectedRows = (int)step.Context.Result;
+                        step.Context.AffectedRows = (int)step.Context.Result;
                     }
                     return;
                 }
@@ -131,7 +131,7 @@ namespace DbGovernator.Realisations
             {
                 try
                 {
-                    var TaskObj = step.Context.executionFunction();
+                    var TaskObj = step.Context.ExecutionFunction();
                     if(TaskObj is Task task)
                     {
                         await task;
@@ -143,7 +143,7 @@ namespace DbGovernator.Realisations
                     }
                     if (step.Context.Result is int affected)
                     {
-                        step.Context.affectedRows = affected;
+                        step.Context.AffectedRows = affected;
                     }
                     return;
                 }

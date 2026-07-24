@@ -41,23 +41,26 @@ namespace DbGovernator
         /// <summary>
         /// Если резльутат int, то записывается сюда.
         /// </summary>
-        public int affectedRows { get; set; }
+        public int AffectedRows { get; set; }
 
         /// <summary>
         /// Имя таблицы.
         /// </summary>
-        public string? tableName { get; set; }
+        public string? TableName { get; set; }
 
         /// <summary>
         /// Тип запроса
         /// </summary>
-        public string? queryType { get; set; }
+        public string? QueryType { get; set; }
 
         /// <summary>
         /// Делегат для передачи функции исполняющей запрос.
         /// </summary>
-        public Func<object?> executionFunction { get; set; }
+        public Func<object?> ExecutionFunction { get; set; }
 
+        /// <summary>
+        /// Хранит информацию о том, была ли у конкретного посетителя ошибка.
+        /// </summary>
         public Dictionary<IVisitor, bool> HadError { get; set; } = new();
     }
 }

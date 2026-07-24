@@ -1,9 +1,11 @@
-﻿using DbGovernator;
+﻿using Dapper;
+using DbGovernator;
 using DbGovernator.Abstractions;
 using DbGovernator.LinqToDB;
 using DbGovernator.NDbClasses;
 using DbGovernator.Realisations;
 using LinqToDB;
+using LinqToDB.Data;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -225,6 +227,98 @@ namespace DbGovernator
                         _logger.LogInfo("*****************************");
                         return;
                     }
+                }
+            }));
+            try
+            {
+                await Task.WhenAll(transaction1, transaction2);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogInfo("Test failed");
+                _logger.LogInfo($"Error in some transaction {ex.Message}");
+                _logger.LogInfo("*****************************");
+                return;
+            }
+            _logger.LogInfo("No conflict");
+            _logger.LogInfo("*****************************");
+        }
+
+        public async Task TestBasicDapper()
+        {
+            _logger.LogInfo("Testing basic transaction");
+            _logger.LogInfo("*****************************");
+            var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider, _transactionVisitors);
+            var NDataSource = NDDataSourceFactory.Create();
+            var ndbCon = NDataSource.OpenConnection();
+            var ndbTrs = ndbCon.BeginTransaction();
+            try
+            {
+                var sql = "UPDATE accounts set money = money + 299 WHERE id = @Id";
+                var rows = ndbCon.Execute(sql, new { Id = 9 });
+                var sql222 = "UPDATE accounts set money = money + 799 WHERE id = @Id";
+                var rows222 = ndbCon.Execute(sql222, new { Id = 8 });
+                ndbTrs.Commit();
+                ndbCon.Close();
+            }
+            catch (Exception ex)
+            {
+                ndbTrs.Rollback();
+                ndbCon.Close();
+                _logger.LogInfo($"Test failed \n {ex.Message}");
+                _logger.LogInfo("*****************************");
+                return;
+            }
+            _logger.LogInfo("Test passed");
+            _logger.LogInfo("*****************************");
+        }
+
+        public async Task TestConflictDapper()
+        {
+            _logger.LogInfo("Testing conflict of transactions LinqToDB");
+            _logger.LogInfo("*****************************");
+            var dbc = new NDbDataConnectionFactory(_visitors, _logger, _transactionVisitors);
+            var ndbCon = dbc.CreateConnection();
+            Task transaction1 = Task.Run((Func<Task?>)(async () =>
+            {
+                var ndbTrs = ndbCon.BeginTransaction();
+                try
+                {
+                    var sql = "UPDATE accounts set money = money + 299 WHERE id = @Id";
+                    var rows = ndbCon.Execute(sql, new { Id = 9 });
+                    var sql222 = "UPDATE accounts set money = money + 799 WHERE id = @Id";
+                    var rows222 = ndbCon.Execute(sql222, new { Id = 8 });
+                    ndbTrs.Commit();
+                    ndbCon.Close();
+                }
+                catch (Exception ex)
+                {
+                    ndbTrs.Rollback();
+                    ndbCon.Close();
+                    _logger.LogInfo($"Transaction №1 failed \n {ex.Message}");
+                    _logger.LogInfo("*****************************");
+                    return;
+                }
+            }));
+            Task transaction2 = Task.Run((Func<Task?>)(async () =>
+            {
+                var ndbTrs = ndbCon.BeginTransaction();
+                try
+                {
+                    var sql = "UPDATE accounts set money = money + 299 WHERE id = @Id";
+                    var rows = ndbCon.Execute(sql, new { Id = 8 });
+                    var sql222 = "UPDATE accounts set money = money + 799 WHERE id = @Id";
+                    var rows222 = ndbCon.Execute(sql222, new { Id = 9 });
+                    ndbTrs.Commit();
+                    ndbCon.Close();
+                }
+                catch (Exception ex)
+                {
+                    ndbTrs.Rollback();
+                    ndbCon.Close();
+                    _logger.LogInfo($"Transaction №1 failed \n {ex.Message}");
+                    _logger.LogInfo("*****************************");
+                    return;
                 }
             }));
             try

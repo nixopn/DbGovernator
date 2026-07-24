@@ -1,9 +1,11 @@
-﻿using DbGovernator;
+﻿using Dapper;
+using DbGovernator;
 using DbGovernator.Abstractions;
 using DbGovernator.LinqToDB;
 using DbGovernator.NDbClasses;
 using DbGovernator.Realisations;
 using LinqToDB;
+using Microsoft.Extensions.DependencyInjection;
 using Npgsql;
 using System;
 using System.Collections.Generic;
@@ -74,6 +76,34 @@ namespace DbGovernator
             var newUser = new User { Name = "AAALinqToDBUser" };
             var insertedId = db.Insert(newUser);
         }
+
+        public async Task InsertDapper()
+        {
+            _logger.LogInfo("Testing insert query");
+            _logger.LogInfo("*****************************");
+            try
+            {
+                var dataSourceFactory222 = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider);
+                var NdataSource222 = dataSourceFactory222.Create();
+                var ndbcon222 = NdataSource222.OpenConnection();
+                var count = ndbcon222.Execute(@"insert into accounts(money, user_id) values (@a, @b)",
+                new[] {
+                    new { a = 229, b = 298 },
+                    new { a = 2222222, b = 239 },
+                    new { a = 2222222, b = 998 }
+                    }
+                );
+            }
+            catch(Exception ex)
+            {
+                _logger.LogInfo("Test failed");
+                _logger.LogInfo(ex.Message);
+                _logger.LogInfo("*****************************");
+            }
+            _logger.LogInfo("Test passed");
+            _logger.LogInfo("*****************************");
+        }
+
         public TestInsert(IEnumerable<IVisitor> visitors, ILogger logger, IConnectionStringProvider connectionStringProvider, IEnumerable<ITransactionVisitor> transactionVisitors)
         {
             _visitors = visitors;

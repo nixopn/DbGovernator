@@ -41,119 +41,85 @@ namespace app
             services.AddSingleton<NDbConnectionFactory>();
             services.AddSingleton<NDbDataConnectionFactory>();
             services.AddSingleton<ITransactionVisitor, TransactionMetrics>();
+
             using (var serviceProvider = services.BuildServiceProvider())
             {
-                INDbDataSourceFactory dataSourceFactory222 = serviceProvider.GetService<INDbDataSourceFactory>();
-                var NdataSource222 = dataSourceFactory222.Create();
-                var ndbcon222 = NdataSource222.OpenConnection();
-                var count = ndbcon222.Execute(@"insert into accounts(money, user_id) values (@a, @b)",
-                new[] { 
-                    new { a = 229, b = 298 }, 
-                    new { a = 2222222, b = 239 }, 
-                    new { a = 2222222, b = 998 } 
-                    }
-                );
-
-
-                var testInsert = serviceProvider.GetService<TestInsert>();
-                testInsert.SetupCommand("INSERT INTO users(name) VALUES ('aaaaaaaa');");
-                await testInsert.InsertQ();
-                await testInsert.InsertLinqToDB();
-                var testSelect = serviceProvider.GetRequiredService<TestSelect>();
-                testSelect.SetupCommand("SELECT * from users;");
-                await testSelect.SelectQ();
-                testSelect.SelectLinqToDB();
-                var testUpdate = serviceProvider.GetService<TestUpdate>();
-                testUpdate.SetupCommand("UPDATE accounts SET money = money + 300 WHERE user_id = 3;");
-                await testUpdate.UpdateQ();
-                await testUpdate.UpdateLinqToDB();
-                var testDelete = serviceProvider.GetService<TestDelete>();
-                testDelete.SetupCommand("DELETE from users where id = 27");
-                await testDelete.DeleteQ();
-                await testDelete.DeleteLinqToDB();
-                var testTransaction = serviceProvider.GetRequiredService<TestTransaction>();
-                testTransaction.SetupCommands("UPDATE accounts SET money = money + 200 WHERE user_id = 8", "UPDATE accounts SET money = money + 300 WHERE user_id = 9");
-                await testTransaction.TestBasic();
-                await testTransaction.TestConflict();
-                var testTransaction222 = serviceProvider.GetRequiredService<TestTransaction>();
-                await testTransaction222.TestBasicLinqToDB();
-                await testTransaction222.TestConflictLinqToDB();
-                INDbDataSourceFactory dataSourceFactory = serviceProvider.GetService<INDbDataSourceFactory>();
-                var NdataSource = dataSourceFactory.Create();
-                Console.WriteLine(NdataSource.GetType().Name);
-                var ndbcon = NdataSource.OpenConnection();
-                Console.WriteLine(ndbcon.GetType().Name);
-                var transaction = ndbcon.BeginTransaction();
-                Console.WriteLine(transaction.GetType().Name);
-                var ndbcmd = ndbcon.CreateCommand();
-                var ndbcmd222 = NdataSource.CreateCommand("INSERT INTO users(name) VALUES ('eodeodeodokeokded');");
-                Console.WriteLine(ndbcmd.GetType().Name);
-                Console.WriteLine(ndbcmd222.GetType().Name);
-                Console.WriteLine(ndbcmd222 is NDbCommand);
-                ndbcmd222.ExecuteNonQuery();
-                transaction.Rollback();
-                ndbcon.Close();
-
-                await using (var cmd = NdataSource.CreateCommand("INSERT INTO users(name) VALUES ('aaaaaaaa');"))
-                {
-                    await cmd.ExecuteNonQueryAsync();
-                }
-
-                using (var cmd = NdataSource.CreateCommand("INSERT INTO users(name) VALUES ('aaaaaaaa');"))
-                {
-                    cmd.ExecuteNonQuery();
-                }
-
-
-                using (var cmd = NdataSource.CreateCommand("SELECT * from users where id=229"))
-                using (var reader = cmd.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        Console.WriteLine($"{reader.GetInt32(0)} {reader.GetString(1)}");
-
-
-                    }
-                }
-
-
-                var dbc = serviceProvider.GetRequiredService<NDbDataConnectionFactory>();
-                var db = dbc.CreateConnection();
-                var selected = db.GetTable<User>().Where(u => u.id == 200).ToList();
-
-
-                foreach (var u in selected)
-                {
-                    Console.WriteLine($"{u.Name}");
-                }
-
-
-                var deleteusers = await db.GetTable<User>().Where(u => u.id == 997).DeleteAsync();
-                //var update = await db.users.Where(u => u.id == 289).Set(u => u.Name, u => u.Name + "aa").UpdateAsync();
-                var newUser = new User { Name = "AAALinqToDBUser" };
-                var insertedId = db.Insert(newUser);
-
-                //INDbDataSourceFactory dataSourceFactory222 = serviceProvider.GetService<INDbDataSourceFactory>();
-                //var NdataSource222 = dataSourceFactory222.Create();
-                //var ndbcon222 = NdataSource222.OpenConnection();
-                //if(ndbcon222 is NDbConnection con222)
-                //{
-                //    using (var db = new ApplicationContext((NDbDataSource)NdataSource222))
-                //    {
-                //        db.Database.EnsureCreated();
-                //        users u1 = new users() { name = "EF" };
-                //        users u2 = new users() { name = "EFF" };
-                //        db.users.AddRange(u1, u2);
-                //        db.SaveChanges();
-
-                //        var userers = db.users.ToList();
-                //        foreach (var u in userers)
-                //        {
-                //            Console.WriteLine($"{u.id} {u.name}");
-                //        }
-                //    }
-                //}
+                await TestNdb(serviceProvider,
+                    "INSERT INTO users(name) VALUES ('aaaaaaaa');",
+                    "SELECT * from users;",
+                    "UPDATE accounts SET money = money + 300 WHERE user_id = 3;",
+                    "DELETE from users where id = 27",
+                    "UPDATE accounts SET money = money + 200 WHERE user_id = 8",
+                    "UPDATE accounts SET money = money + 300 WHERE user_id = 9"
+                    );
+                await TestLinqToDB(serviceProvider);
+                await TestDapper(serviceProvider);
             }
+        }
+
+        public static async Task TestNdb(ServiceProvider serviceProvider, string cmd1, string cmd2, string cmd3, string cmd4, string cmd5, string cmd6)
+        {
+            var Logger = serviceProvider.GetService<ILogger>();
+            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("Testing basic NDB");
+            Logger.LogInfo("\n  *****************************  \n  ");
+            var testInsert = serviceProvider.GetService<TestInsert>();
+            testInsert.SetupCommand(cmd1);
+            await testInsert.InsertQ();;
+            var testSelect = serviceProvider.GetRequiredService<TestSelect>();
+            testSelect.SetupCommand(cmd2);
+            await testSelect.SelectQ();
+            var testUpdate = serviceProvider.GetService<TestUpdate>();
+            testUpdate.SetupCommand(cmd3);
+            await testUpdate.UpdateQ();
+            var testDelete = serviceProvider.GetService<TestDelete>();
+            testDelete.SetupCommand(cmd4);
+            await testDelete.DeleteQ();
+            var testTransaction = serviceProvider.GetRequiredService<TestTransaction>();
+            testTransaction.SetupCommands(cmd5, cmd6);
+            await testTransaction.TestBasic();
+            await testTransaction.TestConflict();
+            Logger.LogInfo("\n  *****************************  \n  ");
+        }
+
+        public static async Task TestLinqToDB(ServiceProvider serviceProvider)
+        {
+            var Logger = serviceProvider.GetService<ILogger>();
+            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("Testing LinqToDB");
+            Logger.LogInfo("\n  *****************************  \n  ");
+            var testInsert = serviceProvider.GetService<TestInsert>();
+            await testInsert.InsertLinqToDB();
+            var testSelect = serviceProvider.GetRequiredService<TestSelect>();
+            testSelect.SelectLinqToDB();
+            var testUpdate = serviceProvider.GetService<TestUpdate>();
+            await testUpdate.UpdateLinqToDB();
+            var testDelete = serviceProvider.GetService<TestDelete>();
+            await testDelete.DeleteLinqToDB();
+            var testTransaction222 = serviceProvider.GetRequiredService<TestTransaction>();
+            await testTransaction222.TestBasicLinqToDB();
+            await testTransaction222.TestConflictLinqToDB();
+            Logger.LogInfo("\n  *****************************  \n  ");
+        }
+
+        public static async Task TestDapper(ServiceProvider serviceProvider)
+        {
+            var Logger = serviceProvider.GetService<ILogger>();
+            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("Testing Dapper");
+            Logger.LogInfo("\n  *****************************  \n  ");
+            var testInsert = serviceProvider.GetService<TestInsert>();
+            await testInsert.InsertDapper();
+            var testSelect = serviceProvider.GetRequiredService<TestSelect>();
+            testSelect.SelectDapper();
+            var testUpdate = serviceProvider.GetService<TestUpdate>();;
+            await testUpdate.UpdateDapper();
+            var testDelete = serviceProvider.GetService<TestDelete>();
+            await testDelete.DeleteDapper();
+            var testTransaction222 = serviceProvider.GetRequiredService<TestTransaction>();
+            await testTransaction222.TestBasicDapper();
+            await testTransaction222.TestConflictDapper();
+            Logger.LogInfo("\n  *****************************  \n  ");
         }
     }
 }

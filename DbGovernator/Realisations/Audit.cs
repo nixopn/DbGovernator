@@ -43,34 +43,34 @@ namespace DbGovernator.Realisations
             var commandText = step.Context.Command.CommandText;
             if (commandText.ToLower().Contains("select"))
             {
-                step.Context.queryType = "select";
+                step.Context.QueryType = "select";
             }
             else if (commandText.ToLower().Contains("update"))
             {
-                step.Context.queryType = "update";
+                step.Context.QueryType = "update";
             }
             else if (commandText.ToLower().Contains("insert"))
             {
-                step.Context.queryType = "insert";
+                step.Context.QueryType = "insert";
             }
             else if (commandText.ToLower().Contains("delete"))
             {
-                step.Context.queryType = "delete";
+                step.Context.QueryType = "delete";
             }
             else
             {
-                step.Context.queryType = "unkown";
+                step.Context.QueryType = "unkown";
             }
             var patterns = new[]
             {
                 @"(?i)(from|into|update|delete\s+from)\s+(\w+)"
             };
             var match = Regex.Match(commandText, patterns[0]);
-            step.Context.tableName = match.Groups[2].Value;
+            step.Context.TableName = match.Groups[2].Value;
 
 
-            Logger.LogInfo($"Query type: {step.Context.queryType}");
-            Logger.LogInfo($"Table name: {step.Context.tableName}");
+            Logger.LogInfo($"Query type: {step.Context.QueryType}");
+            Logger.LogInfo($"Table name: {step.Context.TableName}");
         }
 
         /// <summary>
@@ -82,34 +82,34 @@ namespace DbGovernator.Realisations
             var commandText = step.Context.Command.CommandText;
             if (commandText.ToLower().Contains("select"))
             {
-                step.Context.queryType = "select";
+                step.Context.QueryType = "select";
             }
             else if (commandText.ToLower().Contains("update"))
             {
-                step.Context.queryType = "update";
+                step.Context.QueryType = "update";
             }
             else if (commandText.ToLower().Contains("insert"))
             {
-                step.Context.queryType = "insert";
+                step.Context.QueryType = "insert";
             }
             else if (commandText.ToLower().Contains("delete"))
             {
-                step.Context.queryType = "delete";
+                step.Context.QueryType = "delete";
             }
             else
             {
-                step.Context.queryType = "unkown";
+                step.Context.QueryType = "unkown";
             }
             var patterns = new[]
             {
                 @"(?i)(from|into|update|delete\s+from)\s+(\w+)"
             };
             var match = Regex.Match(commandText, patterns[0]);
-            step.Context.tableName = match.Groups[2].Value;
+            step.Context.TableName = match.Groups[2].Value;
 
 
-            Logger.LogInfo($"Query type: {step.Context.queryType}");
-            Logger.LogInfo($"Table name: {step.Context.tableName}");
+            Logger.LogInfo($"Query type: {step.Context.QueryType}");
+            Logger.LogInfo($"Table name: {step.Context.TableName}");
         }
     }
 

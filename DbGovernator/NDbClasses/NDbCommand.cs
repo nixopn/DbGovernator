@@ -134,7 +134,7 @@ namespace DbGovernator.NDbClasses
         /// </summary>
         private async Task<T> ExecuteStepsAsync<T>(Func<Task<T>?> executeFunc, ExecutionContext executionContext)
         {
-            executionContext.executionFunction = executeFunc;
+            executionContext.ExecutionFunction = executeFunc;
             foreach(var visitor in _visitors)
             {
                 executionContext.HadError[visitor] = false;
@@ -178,7 +178,7 @@ namespace DbGovernator.NDbClasses
         /// <exception cref="Exception"></exception>
         private T ExecuteSteps<T>(Func<object?> executeFunc, ExecutionContext executionContext)
         {
-            executionContext.executionFunction = executeFunc;
+            executionContext.ExecutionFunction = executeFunc;
             foreach (var visitor in _visitors)
             {
                 executionContext.HadError[visitor] = false;
@@ -220,6 +220,7 @@ namespace DbGovernator.NDbClasses
             executionContext.Command = _innerCommand;
 
             var result = ExecuteSteps<int>(() => _innerCommand.ExecuteNonQuery(), executionContext);
+            _logger.LogInfo("Successful execution");
             executionContext.Result = result;
             return result;
         }
@@ -234,6 +235,7 @@ namespace DbGovernator.NDbClasses
             executionContext.Command = _innerCommand;
 
             var result = await ExecuteStepsAsync(() => _innerCommand.ExecuteNonQueryAsync(), executionContext);
+            _logger.LogInfo("Successful async execution");
             executionContext.Result = result;
             return result;
         }
@@ -248,6 +250,7 @@ namespace DbGovernator.NDbClasses
             executionContext.Command = _innerCommand;
 
             var result = ExecuteSteps<object?>(() => _innerCommand.ExecuteScalar(), executionContext);
+            _logger.LogInfo("Successful execution");
             executionContext.Result = result;
             return result;
         }
@@ -262,6 +265,7 @@ namespace DbGovernator.NDbClasses
             var executionContext = new ExecutionContext();
             executionContext.Command = _innerCommand;
             var result = await ExecuteStepsAsync(() => _innerCommand.ExecuteScalarAsync(), executionContext);
+            _logger.LogInfo("Successful async execution");
             executionContext.Result = result;
             return result;
         }
@@ -289,6 +293,7 @@ namespace DbGovernator.NDbClasses
             executionContext.Command = _innerCommand;
 
             var result = ExecuteSteps<DbDataReader>(() => _innerCommand.ExecuteReader(behavior), executionContext);
+            _logger.LogInfo("Successful execution");
             executionContext.Result = result;
             return result;
         }
