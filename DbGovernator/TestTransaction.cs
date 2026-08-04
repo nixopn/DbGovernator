@@ -174,13 +174,13 @@ namespace DbGovernator
                 }
                 catch (Exception ex)
                 {
+                    await db.CloseAsync();
                     _logger.LogInfo($"Test failed \n {ex.Message}");
                     _logger.LogInfo("*****************************");
                     return;
                 }
             }
             await db.CloseAsync();
-
             _logger.LogInfo("Test passed");
             _logger.LogInfo("*****************************");
         }
@@ -212,14 +212,15 @@ namespace DbGovernator
                 }
             }
             }));
+            var db2Tr = dbc.CreateConnection();
             Task transaction2 = Task.Run((Func<Task?>)(async () =>
             {
-                using (var trs = await db.BeginTransactionAsync())
+                using (var trs = await db2Tr.BeginTransactionAsync())
                 {
                     try
                     {
-                        var update = await db.GetTable<Account>().Where(u => u.id == 9).Set(u => u.Money, u => u.Money + 300).UpdateAsync();
-                        var update2 = await db.GetTable<Account>().Where(u => u.id == 8).Set(u => u.Money, u => u.Money + 200).UpdateAsync();
+                        var update = await db2Tr.GetTable<Account>().Where(u => u.id == 9).Set(u => u.Money, u => u.Money + 300).UpdateAsync();
+                        var update2 = await db2Tr.GetTable<Account>().Where(u => u.id == 8).Set(u => u.Money, u => u.Money + 200).UpdateAsync();
                     }
                     catch (Exception ex)
                     {
@@ -236,11 +237,14 @@ namespace DbGovernator
             catch (Exception ex)
             {
                 await db.CloseAsync();
+                await db2Tr.CloseAsync();
                 _logger.LogInfo("Test failed");
                 _logger.LogInfo($"Error in some transaction {ex.Message}");
                 _logger.LogInfo("*****************************");
                 return;
             }
+            await db.CloseAsync();
+            await db2Tr.CloseAsync();
             _logger.LogInfo("No conflict");
             _logger.LogInfo("*****************************");
         }

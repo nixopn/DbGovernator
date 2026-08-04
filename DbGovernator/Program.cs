@@ -118,7 +118,9 @@ namespace app
             await testDelete.DeleteDapper();
             var testTransaction222 = serviceProvider.GetRequiredService<TestTransaction>();
             await testTransaction222.TestBasicDapper();
-            await testTransaction222.TestConflictDapper();
+            await Task.Delay(3000);
+            var testTransaction229 = serviceProvider.GetRequiredService<TestTransaction>();
+            await testTransaction229.TestConflictDapper();
             Logger.LogInfo("\n*****************************\n  ");
         }
     }
