@@ -129,7 +129,7 @@ namespace DbGovernator.NDbClasses
         /// </returns>
         protected override DbCommand CreateDbCommand()
         {
-            return new NDbCommand(_innerConnection.CreateCommand(), _visitors, _logger);
+            return _trs is null ? new NDbCommand(_innerConnection.CreateCommand(), _visitors, _logger) : new NDbCommand(_innerConnection.CreateCommand(), this, _visitors, _logger, _trs);
         }
 
 
