@@ -60,9 +60,9 @@ namespace app
         public static async Task TestNdb(ServiceProvider serviceProvider, string cmd1, string cmd2, string cmd3, string cmd4, string cmd5, string cmd6)
         {
             var Logger = serviceProvider.GetService<ILogger>();
-            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("\n *****************************\n  ");
             Logger.LogInfo("Testing basic NDB");
-            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("\n*****************************\n  ");
             var testInsert = serviceProvider.GetService<TestInsert>();
             testInsert.SetupCommand(cmd1);
             await testInsert.InsertQ();;
@@ -79,15 +79,15 @@ namespace app
             testTransaction.SetupCommands(cmd5, cmd6);
             await testTransaction.TestBasic();
             await testTransaction.TestConflict();
-            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("\n*****************************\n  ");
         }
 
         public static async Task TestLinqToDB(ServiceProvider serviceProvider)
         {
             var Logger = serviceProvider.GetService<ILogger>();
-            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("\n*****************************\n  ");
             Logger.LogInfo("Testing LinqToDB");
-            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("\n*****************************\n  ");
             var testInsert = serviceProvider.GetService<TestInsert>();
             await testInsert.InsertLinqToDB();
             var testSelect = serviceProvider.GetRequiredService<TestSelect>();
@@ -99,15 +99,15 @@ namespace app
             var testTransaction222 = serviceProvider.GetRequiredService<TestTransaction>();
             await testTransaction222.TestBasicLinqToDB();
             await testTransaction222.TestConflictLinqToDB();
-            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("\n*****************************\n  ");
         }
 
         public static async Task TestDapper(ServiceProvider serviceProvider)
         {
             var Logger = serviceProvider.GetService<ILogger>();
-            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("\n*****************************\n  ");
             Logger.LogInfo("Testing Dapper");
-            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("\n*****************************\n  ");
             var testInsert = serviceProvider.GetService<TestInsert>();
             await testInsert.InsertDapper();
             var testSelect = serviceProvider.GetRequiredService<TestSelect>();
@@ -119,7 +119,7 @@ namespace app
             var testTransaction222 = serviceProvider.GetRequiredService<TestTransaction>();
             await testTransaction222.TestBasicDapper();
             await testTransaction222.TestConflictDapper();
-            Logger.LogInfo("\n  *****************************  \n  ");
+            Logger.LogInfo("\n*****************************\n  ");
         }
     }
 }
