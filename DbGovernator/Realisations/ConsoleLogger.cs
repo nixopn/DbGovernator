@@ -1,0 +1,39 @@
+﻿using System;
+using System.Collections.Generic;
+using Microsoft.Extensions.DependencyInjection;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using DbGovernator.Abstractions;
+
+namespace DbGovernator.Realisations
+{
+    /// <summary>
+    /// Реализация интерфейса ILogger для печати в консоль.
+    /// </summary>
+    public class ConsoleLogger : ILogger
+    {
+        public string Message { get; set; }
+
+        public void LogInfo(string Message)
+        {
+            Console.WriteLine(Message);
+        }
+
+        public void LogWarning(string Message)
+        {
+        }
+
+        public void LogError(string Message)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.WriteLine($"Error: {Message}");
+            Console.ResetColor();
+        }
+
+
+        public void LogDebug(string Message)
+        {
+        }
+    }
+}
