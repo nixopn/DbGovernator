@@ -208,7 +208,7 @@ namespace DbGovernator
                 {
                         _logger.LogInfo($"Transaction №1 failed \n {ex.Message}");
                         _logger.LogInfo("*****************************");
-                    return;
+                        throw;
                 }
             }
             }));
@@ -226,7 +226,7 @@ namespace DbGovernator
                     {
                         _logger.LogInfo($"Transaction №2 failed \n {ex.Message}");
                         _logger.LogInfo("*****************************");
-                        return;
+                        throw;
                     }
                 }
             }));
@@ -301,7 +301,7 @@ namespace DbGovernator
                     {
                         _logger.LogInfo($"Transaction №1 failed \n {ex.Message}");
                         _logger.LogInfo("*****************************");
-                        return;
+                        throw;
                     }
                 }
             }));
@@ -322,7 +322,7 @@ namespace DbGovernator
                     {
                         _logger.LogInfo($"Transaction №1 failed \n {ex.Message}");
                         _logger.LogInfo("*****************************");
-                        return;
+                        throw;
                     }
                 }
             }));
