@@ -49,7 +49,7 @@ namespace DbGovernator.LinqToDB
                 .Property(x => x.id).IsPrimaryKey().IsIdentity()
                 .Property(x => x.Name).HasColumnName("name");
             builder.Entity<Account>()
-                .HasTableName("users")
+                .HasTableName("accounts")
                 .Property(x => x.id).IsPrimaryKey().IsIdentity()
                 .Property(x => x.Money).HasColumnName("money")
                 .Property(x => x.user_id).HasColumnName("user_id");
