@@ -255,26 +255,25 @@ namespace DbGovernator
             _logger.LogInfo("*****************************");
             var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider, _transactionVisitors);
             var NDataSource = NDDataSourceFactory.Create();
-            var ndbCon = NDataSource.OpenConnection();
-            var ndbTrs = ndbCon.BeginTransaction();
-            try
+            using (var ndbCon = NDataSource.OpenConnection())
+            using (var ndbTrs = ndbCon.BeginTransaction())
             {
-                var sql = "UPDATE accounts set money = money + 299 WHERE id = @Id";
-                var rows = ndbCon.Execute(sql, new { Id = 9 });
-                var sql222 = "UPDATE accounts set money = money + 799 WHERE id = @Id";
-                var rows222 = ndbCon.Execute(sql222, new { Id = 8 });
-                ndbTrs.Commit();
-                ndbCon.Close();
+                try
+                {
+                    var sql = "UPDATE accounts set money = money + 299 WHERE id = @Id";
+                    var rows = ndbCon.Execute(sql, new { Id = 9 });
+                    var sql222 = "UPDATE accounts set money = money + 799 WHERE id = @Id";
+                    var rows222 = ndbCon.Execute(sql222, new { Id = 8 });
+                    ndbTrs.Commit();
+                }
+                catch (Exception ex)
+                {
+                    ndbTrs.Rollback();
+                    _logger.LogInfo($"Test failed \n {ex.Message}");
+                    _logger.LogInfo("*****************************");
+                    return;
+                }
             }
-            catch (Exception ex)
-            {
-                ndbTrs.Rollback();
-                ndbCon.Close();
-                _logger.LogInfo($"Test failed \n {ex.Message}");
-                _logger.LogInfo("*****************************");
-                return;
-            }
-            ndbCon.Close();
             _logger.LogInfo("Test passed");
             _logger.LogInfo("*****************************");
         }
@@ -285,48 +284,46 @@ namespace DbGovernator
             _logger.LogInfo("*****************************");
             var NDDataSourceFactory = new NDbDataSourceFactory(_visitors, _logger, _connectionStringProvider, _transactionVisitors);
             var NDataSource = NDDataSourceFactory.Create();
-            var ndbCon = NDataSource.OpenConnection();
-            var ndbTrs = ndbCon.BeginTransaction();
             Task transaction1 = Task.Run((Func<Task?>)(async () =>
             {
-                var ndbTrs = ndbCon.BeginTransaction();
-                try
+                using (var ndbCon = NDataSource.OpenConnection())
+                using (var ndbTrs = ndbCon.BeginTransaction())
                 {
-                    var sql = "UPDATE accounts set money = money + 299 WHERE id = @Id";
-                    var rows = ndbCon.Execute(sql, new { Id = 9 });
-                    var sql222 = "UPDATE accounts set money = money + 799 WHERE id = @Id";
-                    var rows222 = ndbCon.Execute(sql222, new { Id = 8 });
-                    ndbTrs.Commit();
-                    ndbCon.Close();
-                }
-                catch (Exception ex)
-                {
-                    ndbTrs.Rollback();
-                    ndbCon.Close();
-                    _logger.LogInfo($"Transaction №1 failed \n {ex.Message}");
-                    _logger.LogInfo("*****************************");
-                    return;
+                    try
+                    {
+                        var sql = "UPDATE accounts set money = money + 299 WHERE id = @Id";
+                        var rows = ndbCon.Execute(sql, new { Id = 9 });
+                        var sql222 = "UPDATE accounts set money = money + 799 WHERE id = @Id";
+                        var rows222 = ndbCon.Execute(sql222, new { Id = 8 });
+                        ndbTrs.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogInfo($"Transaction №1 failed \n {ex.Message}");
+                        _logger.LogInfo("*****************************");
+                        return;
+                    }
                 }
             }));
             Task transaction2 = Task.Run((Func<Task?>)(async () =>
             {
-                var ndbTrs = ndbCon.BeginTransaction();
-                try
+                using (var ndbCon2 = NDataSource.OpenConnection())
+                using (var ndbTrs2 = ndbCon2.BeginTransaction())
                 {
-                    var sql = "UPDATE accounts set money = money + 299 WHERE id = @Id";
-                    var rows = ndbCon.Execute(sql, new { Id = 8 });
-                    var sql222 = "UPDATE accounts set money = money + 799 WHERE id = @Id";
-                    var rows222 = ndbCon.Execute(sql222, new { Id = 9 });
-                    ndbTrs.Commit();
-                    ndbCon.Close();
-                }
-                catch (Exception ex)
-                {
-                    ndbTrs.Rollback();
-                    ndbCon.Close();
-                    _logger.LogInfo($"Transaction №1 failed \n {ex.Message}");
-                    _logger.LogInfo("*****************************");
-                    return;
+                    try
+                    {
+                        var sql = "UPDATE accounts set money = money + 299 WHERE id = @Id";
+                        var rows = ndbCon2.Execute(sql, new { Id = 8 });
+                        var sql222 = "UPDATE accounts set money = money + 799 WHERE id = @Id";
+                        var rows222 = ndbCon2.Execute(sql222, new { Id = 9 });
+                        ndbTrs2.Commit();
+                    }
+                    catch (Exception ex)
+                    {
+                        _logger.LogInfo($"Transaction №1 failed \n {ex.Message}");
+                        _logger.LogInfo("*****************************");
+                        return;
+                    }
                 }
             }));
             try
