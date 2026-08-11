@@ -37,7 +37,8 @@ namespace DbGovernator.Realisations
         {
             if (maxRetries <= 0)
             {
-                Logger.LogWarning("Tried to set zero or negative retries \n Leaving base retry number of 9 retries");
+                Logger.LogError("Tried to set zero or negative retries");
+                throw (new Exception("Tried to set zero or negative retries"));
             }
             _maxRetries = maxRetries;
         }
@@ -48,7 +49,8 @@ namespace DbGovernator.Realisations
         {
             if(retryDelayMs <= 0)
             {
-                Logger.LogWarning("Tried to set zero or negative delay \n Leaving base retry number of 298 ms");
+                Logger.LogError("Tried to set zero or negative delay");
+                throw (new Exception("Tried to set zero or negative delay"));
             }
             _retryDelayMs = retryDelayMs;
         }

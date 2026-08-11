@@ -159,5 +159,25 @@ namespace Tests
             });
             Assert.AreEqual("Not an sql exception", ex.Message);
         }
+
+        [TestMethod]
+        public void SetRetriesWrong()
+        {
+            var ex = Assert.ThrowsException<Exception>(() =>
+            {
+                _executionStrategy.SetTries(0);
+            });
+            Assert.AreEqual("Tried to set zero or negative retries", ex.Message);
+        }
+
+        [TestMethod]
+        public void SetDelayWrong()
+        {
+            var ex = Assert.ThrowsException<Exception>(() =>
+            {
+                _executionStrategy.SetRetryDelay(0);
+            });
+            Assert.AreEqual("Tried to set zero or negative delay", ex.Message);
+        }
     }
 }
