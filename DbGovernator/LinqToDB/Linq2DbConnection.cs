@@ -21,7 +21,7 @@ namespace DbGovernator.LinqToDB
     /// <summary>
     /// Класс-наследник DataConnection, реализующий взаимодействие NDb-классов с LinqToDB.
     /// </summary>
-    public class  NDbDataConnectionFactory
+    public class  NDbDataConnectionFactory : INDbDataConnectionFactory
     {
         private MappingSchema _mappingSchema;
         private IEnumerable<IVisitor> _visitors;
@@ -40,7 +40,7 @@ namespace DbGovernator.LinqToDB
             _connectionStringProvider = connectionStringProvider;
         }
 
-        private MappingSchema CreateMappingSchema()
+        public MappingSchema CreateMappingSchema()
         {
             var schema = new MappingSchema();
             var builder = new FluentMappingBuilder(schema);
@@ -68,6 +68,22 @@ namespace DbGovernator.LinqToDB
             );
             return dataConnection;
 
+        }
+
+        public DataConnection CreateConnection(NDbConnection ndbCon)
+        {
+            var dataConnection = new DataConnection(new DataOptions()
+                .UsePostgreSQL(PostgreSQLVersion.v15)
+                .UseConnection(ndbCon)
+                .UseMappingSchema(_mappingSchema)
+            );
+            return dataConnection;
+
+        }
+
+        public NDbConnection CreateNDbConnection(NpgsqlConnection npgsqlCon)
+        {
+            return new NDbConnection(npgsqlCon, _visitors, _logger, _transactionVisitors);
         }
     }
 }
