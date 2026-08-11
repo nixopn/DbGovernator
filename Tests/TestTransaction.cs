@@ -30,7 +30,7 @@ namespace Tests
         }
 
         [TestMethod]
-        public void BeginException()
+        public void BeginTransactionVisitorException()
         {
             _transactionVisitor.Setup(x => x.VisitBegin(It.IsAny<BeginTransactionStep>())).Throws<InvalidOperationException>();
             _transactionVisitors.Add(_transactionVisitor.Object);

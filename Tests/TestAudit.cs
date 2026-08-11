@@ -41,6 +41,7 @@ namespace Tests
             Assert.AreEqual("users", step.Context.TableName);
         }
 
+
         [TestMethod]
         public void CheckQueryUpdate()
         {
@@ -78,6 +79,45 @@ namespace Tests
             _audit.VisitPreparing(step);
             Assert.AreEqual("delete", step.Context.QueryType);
             Assert.AreEqual("users", step.Context.TableName);
+        }
+
+        [TestMethod]
+        public void CheckQueryWrongCommandFormat()
+        {
+            _innerCommand.CommandText = "inserawdawdt awdawdawdinawdawdto users(name) values ('aaaaaaaa');";
+            var context = new DbGovernator.ExecutionContext();
+            context.Command = _innerCommand;
+            var step = new PrepareCommand();
+            step.Context = context;
+            _audit.VisitPreparing(step);
+            Assert.AreEqual("unkown", step.Context.QueryType);
+            Assert.AreEqual("", step.Context.TableName);
+        }
+
+        [TestMethod]
+        public void CheckQueryNullCommandFormat()
+        {
+            _innerCommand.CommandText = null;
+            var context = new DbGovernator.ExecutionContext();
+            context.Command = _innerCommand;
+            var step = new PrepareCommand();
+            step.Context = context;
+            _audit.VisitPreparing(step);
+            Assert.AreEqual("unkown", step.Context.QueryType);
+            Assert.AreEqual("", step.Context.TableName);
+        }
+
+        [TestMethod]
+        public void CheckQueryStringEmptyCommandFormat()
+        {
+            _innerCommand.CommandText = String.Empty;
+            var context = new DbGovernator.ExecutionContext();
+            context.Command = _innerCommand;
+            var step = new PrepareCommand();
+            step.Context = context;
+            _audit.VisitPreparing(step);
+            Assert.AreEqual("unkown", step.Context.QueryType);
+            Assert.AreEqual("", step.Context.TableName);
         }
     }
 }

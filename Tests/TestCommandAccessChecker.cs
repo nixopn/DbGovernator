@@ -42,8 +42,9 @@ namespace Tests
         }
 
         [TestMethod]
-        public void AccessNotGranted()
+        public void AccessDenied()
         {
+            // Проверяем ситуацию, когда посетитель AccessChecker запрещает доступ.
             _innerCommand.CommandText = "delete from users where id = 299;";
             var context = new DbGovernator.ExecutionContext();
             context.QueryType = "delete";
