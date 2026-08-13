@@ -66,7 +66,7 @@ namespace Tests
             var context = new DbGovernator.ExecutionContext();
             int expectedResult = 298;
             context.ExecutionFunction = () => expectedResult;
-            var step = new ExecutionSt();
+            var step = new ExecutionStep();
             step.Context = context;
             _executionStrategy.VisitExecution(step);
             Assert.AreEqual(expectedResult, context.Result);
@@ -79,7 +79,7 @@ namespace Tests
             var context = new DbGovernator.ExecutionContext();
             string obj = "Object result";
             context.ExecutionFunction = () => obj;
-            var step = new ExecutionSt();
+            var step = new ExecutionStep();
             step.Context = context;
             _executionStrategy.VisitExecution(step);
             Assert.AreEqual(obj, context.Result);
@@ -91,7 +91,7 @@ namespace Tests
             var context = new DbGovernator.ExecutionContext();
             var taskResult = Task.FromResult(298);
             context.ExecutionFunction = () => taskResult;
-            var step = new ExecutionSt();
+            var step = new ExecutionStep();
             step.Context = context;
             _executionStrategy.VisitExecution(step);
             Assert.AreEqual(taskResult.Result, context.Result);
@@ -113,7 +113,7 @@ namespace Tests
                 }
                 return 298;
             };
-            var step = new ExecutionSt();
+            var step = new ExecutionStep();
             step.Context = context;
             _executionStrategy.VisitExecution(step);
             Assert.AreEqual(expectedResult, context.Result);
@@ -134,7 +134,7 @@ namespace Tests
                 }
                 return 298;
             };
-            var step = new ExecutionSt();
+            var step = new ExecutionStep();
             step.Context = context;
             var ex = Assert.ThrowsException<Exception>(() =>
             {
@@ -151,7 +151,7 @@ namespace Tests
             {
                 throw new NullReferenceException("Test exception");
             };
-            var step = new ExecutionSt();
+            var step = new ExecutionStep();
             step.Context = context;
             var ex = Assert.ThrowsException<Exception>(() =>
             {

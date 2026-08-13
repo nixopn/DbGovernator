@@ -56,13 +56,13 @@ namespace Tests
 
             _visitor.Setup(x => x.VisitPreparing(It.IsAny<PrepareCommand>()));
             _visitor.Setup(x => x.VisitBeforeExecution(It.IsAny<BeforeExecute>()));
-            _visitor.Setup(x => x.VisitExecution(It.IsAny<ExecutionSt>()));
+            _visitor.Setup(x => x.VisitExecution(It.IsAny<ExecutionStep>()));
             _visitor.Setup(x => x.VisitAfterExecution(It.IsAny<AfterExecution>()));
             _visitor.Setup(x => x.VisitResultProcessing(It.IsAny<ResultProcessing>()));
 
             _visitor2.Setup(x => x.VisitPreparing(It.IsAny<PrepareCommand>()));
             _visitor2.Setup(x => x.VisitBeforeExecution(It.IsAny<BeforeExecute>()));
-            _visitor2.Setup(x => x.VisitExecution(It.IsAny<ExecutionSt>()));
+            _visitor2.Setup(x => x.VisitExecution(It.IsAny<ExecutionStep>()));
             _visitor2.Setup(x => x.VisitAfterExecution(It.IsAny<AfterExecution>()));
             _visitor2.Setup(x => x.VisitResultProcessing(It.IsAny<ResultProcessing>()));
 
@@ -75,13 +75,13 @@ namespace Tests
             
             _visitor.Verify(x => x.VisitPreparing(It.IsAny<PrepareCommand>()), Times.Once);
             _visitor.Verify(x => x.VisitBeforeExecution(It.IsAny<BeforeExecute>()), Times.Once);
-            _visitor.Verify(x => x.VisitExecution(It.IsAny<ExecutionSt>()), Times.Once);
+            _visitor.Verify(x => x.VisitExecution(It.IsAny<ExecutionStep>()), Times.Once);
             _visitor.Verify(x => x.VisitAfterExecution(It.IsAny<AfterExecution>()), Times.Once);
             _visitor.Verify(x => x.VisitResultProcessing(It.IsAny<ResultProcessing>()), Times.Once);
 
             _visitor2.Verify(x => x.VisitPreparing(It.IsAny<PrepareCommand>()), Times.Once);
             _visitor2.Verify(x => x.VisitBeforeExecution(It.IsAny<BeforeExecute>()), Times.Once);
-            _visitor2.Verify(x => x.VisitExecution(It.IsAny<ExecutionSt>()), Times.Once);
+            _visitor2.Verify(x => x.VisitExecution(It.IsAny<ExecutionStep>()), Times.Once);
             _visitor2.Verify(x => x.VisitAfterExecution(It.IsAny<AfterExecution>()), Times.Once);
             _visitor2.Verify(x => x.VisitResultProcessing(It.IsAny<ResultProcessing>()), Times.Once);
         }
@@ -97,13 +97,13 @@ namespace Tests
 
             _visitor.Setup(x => x.VisitPreparing(It.IsAny<PrepareCommand>()));
             _visitor.Setup(x => x.VisitBeforeExecution(It.IsAny<BeforeExecute>()));
-            _visitor.Setup(x => x.VisitExecution(It.IsAny<ExecutionSt>())).Throws(new Exception("Test exception"));
+            _visitor.Setup(x => x.VisitExecution(It.IsAny<ExecutionStep>())).Throws(new Exception("Test exception"));
             _visitor.Setup(x => x.VisitAfterExecution(It.IsAny<AfterExecution>()));
             _visitor.Setup(x => x.VisitResultProcessing(It.IsAny<ResultProcessing>()));
 
             _visitor2.Setup(x => x.VisitPreparing(It.IsAny<PrepareCommand>()));
             _visitor2.Setup(x => x.VisitBeforeExecution(It.IsAny<BeforeExecute>()));
-            _visitor2.Setup(x => x.VisitExecution(It.IsAny<ExecutionSt>()));
+            _visitor2.Setup(x => x.VisitExecution(It.IsAny<ExecutionStep>()));
             _visitor2.Setup(x => x.VisitAfterExecution(It.IsAny<AfterExecution>()));
             _visitor2.Setup(x => x.VisitResultProcessing(It.IsAny<ResultProcessing>()));
 
@@ -116,13 +116,13 @@ namespace Tests
 
             _visitor.Verify(x => x.VisitPreparing(It.IsAny<PrepareCommand>()), Times.Once);
             _visitor.Verify(x => x.VisitBeforeExecution(It.IsAny<BeforeExecute>()), Times.Once);
-            _visitor.Verify(x => x.VisitExecution(It.IsAny<ExecutionSt>()), Times.Once);
+            _visitor.Verify(x => x.VisitExecution(It.IsAny<ExecutionStep>()), Times.Once);
             _visitor.Verify(x => x.VisitAfterExecution(It.IsAny<AfterExecution>()), Times.Never);
             _visitor.Verify(x => x.VisitResultProcessing(It.IsAny<ResultProcessing>()), Times.Never);
 
             _visitor2.Verify(x => x.VisitPreparing(It.IsAny<PrepareCommand>()), Times.Once);
             _visitor2.Verify(x => x.VisitBeforeExecution(It.IsAny<BeforeExecute>()), Times.Once);
-            _visitor2.Verify(x => x.VisitExecution(It.IsAny<ExecutionSt>()), Times.Once);
+            _visitor2.Verify(x => x.VisitExecution(It.IsAny<ExecutionStep>()), Times.Once);
             _visitor2.Verify(x => x.VisitAfterExecution(It.IsAny<AfterExecution>()), Times.Once);
             _visitor2.Verify(x => x.VisitResultProcessing(It.IsAny<ResultProcessing>()), Times.Once);
         }

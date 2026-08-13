@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 namespace DbGovernator.LinqToDB
 {
     /// <summary>
-    /// Класс-наследник DataConnection, реализующий взаимодействие NDb-классов с LinqToDB.
+    /// Класс-наследник интерфейса INDbDataConnectionFactory, реализующий взаимодействие NDb-классов с LinqToDB.
     /// </summary>
     public class  NDbDataConnectionFactory : INDbDataConnectionFactory
     {

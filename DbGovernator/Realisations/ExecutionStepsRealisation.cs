@@ -86,7 +86,7 @@ namespace DbGovernator.Realisations
     /// Класс, реализующий абстрактный класс ExecutionStep шага выполнения команды.
     /// Шаг выполнения команды.
     /// </summary>
-    public class ExecutionSt : ExecutionCommandStep
+    public class ExecutionStep : ExecutionCommandStep
     {
         public override void AcceptVisitor(IVisitor visitor, ExecutionContext context)
         {

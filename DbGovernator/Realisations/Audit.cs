@@ -23,12 +23,12 @@ namespace DbGovernator.Realisations
 
         public void VisitBeforeExecution(BeforeExecute step) { }
 
-        public void VisitExecution(ExecutionSt step) { }
+        public void VisitExecution(ExecutionStep step) { }
         
         
         public async Task VisitBeforeExecutionAsync(BeforeExecute step) { }
         
-        public async Task VisitExecutionAsync(ExecutionSt step) { }
+        public async Task VisitExecutionAsync(ExecutionStep step) { }
         
         public async Task VisitAfterExecutionAsync(AfterExecution step) { }
         

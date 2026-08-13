@@ -132,7 +132,10 @@ namespace DbGovernator.NDbClasses
             return _trs is null ? new NDbCommand(_innerConnection.CreateCommand(), _visitors, _logger) : new NDbCommand(_innerConnection.CreateCommand(), this, _visitors, _logger, _trs);
         }
 
-
+        /// <summary>
+        /// Метод, который возвращает внутреннее соединение у NDbConnection.
+        /// </summary>
+        /// <returns></returns>
         public DbConnection GetConnection()
         {
             return _innerConnection;

@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.EF
 {
+    /// <summary>
+    /// Класс пользователей из демонстрационной БД для работы с EF.
+    /// </summary>
     public class Users
     {
         public int id { get; set; }
@@ -13,6 +16,9 @@ namespace DbGovernator.EF
         public List<Accounts> accounts { get; set; }
     }
 
+    /// <summary>
+    /// Класс учётных записей из демонстрационной БД для работы с EF.
+    /// </summary>
     public class Accounts
     {
         public int id { get; set; }

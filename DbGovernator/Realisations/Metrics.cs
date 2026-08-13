@@ -73,8 +73,8 @@ namespace DbGovernator.Realisations
             step.Context.Before = DateTime.UtcNow; 
         }
 
-        public void VisitExecution(ExecutionSt step) { }
-        public async Task VisitExecutionAsync(ExecutionSt step) { }
+        public void VisitExecution(ExecutionStep step) { }
+        public async Task VisitExecutionAsync(ExecutionStep step) { }
 
         /// <summary>
         /// Собирает сырой sql-запрос.

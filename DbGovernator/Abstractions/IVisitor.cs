@@ -18,8 +18,8 @@ namespace DbGovernator.Abstractions
         public async Task VisitPreparingAsync(PrepareCommand step) { }
         public void VisitBeforeExecution(BeforeExecute step);
         public async Task VisitBeforeExecutionAsync(BeforeExecute step) { }
-        public void VisitExecution(ExecutionSt step);
-        public async Task VisitExecutionAsync(ExecutionSt step) { }
+        public void VisitExecution(ExecutionStep step);
+        public async Task VisitExecutionAsync(ExecutionStep step) { }
         public void VisitAfterExecution(AfterExecution step);
         public async Task VisitAfterExecutionAsync(AfterExecution step) { }
         public void VisitResultProcessing(ResultProcessing step);

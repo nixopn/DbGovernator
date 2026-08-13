@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 namespace DbGovernator.LinqToDB
 {
+    /// <summary>
+    /// Интерфейс фабрики для соединения LinqToDb.
+    /// </summary>
     public interface INDbDataConnectionFactory
     {
         public abstract MappingSchema CreateMappingSchema();

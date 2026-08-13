@@ -67,7 +67,7 @@ namespace DbGovernator.Realisations
         /// <summary>
         /// Выполнение запроса.
         /// </summary>
-        public void VisitExecution(ExecutionSt step)
+        public void VisitExecution(ExecutionStep step)
         {
             int i = 1;
             do
@@ -134,7 +134,7 @@ namespace DbGovernator.Realisations
         /// <param name="step"></param>
         /// <returns></returns>
         /// <exception cref="Exception"></exception>
-        public async Task VisitExecutionAsync(ExecutionSt step)
+        public async Task VisitExecutionAsync(ExecutionStep step)
         {
             int i = 1;
             do

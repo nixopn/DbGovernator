@@ -14,7 +14,6 @@ namespace DbGovernator.Abstractions
     {
         public ILogger Logger { get; set; }
 
-
         public void VisitBegin(BeginTransactionStep step);
         public async Task VisitBeginAsync(BeginTransactionStep step) { }
         public void VisitCommit(CommitTransactionStep step);

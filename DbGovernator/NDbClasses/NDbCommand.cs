@@ -68,7 +68,7 @@ namespace DbGovernator.NDbClasses
             {
                 new PrepareCommand(),
                 new BeforeExecute(),
-                new ExecutionSt(),
+                new ExecutionStep(),
                 new AfterExecution(),
                 new ResultProcessing()
             };
@@ -93,7 +93,7 @@ namespace DbGovernator.NDbClasses
             {
                 new PrepareCommand(),
                 new BeforeExecute(),
-                new ExecutionSt(),
+                new ExecutionStep(),
                 new AfterExecution(),
                 new ResultProcessing()
             };

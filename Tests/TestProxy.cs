@@ -82,7 +82,6 @@ namespace Tests
             _innerCommand.Verify(x => x.ExecuteScalar(), Times.Once);
         }
 
-
         [TestMethod]
         public void LinqToDbProxy()
         {
